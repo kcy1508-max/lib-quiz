@@ -166,7 +166,7 @@
         { code: "030", name: "백과사전", main: "000 총류", answers: ["백과사전", "일반백과사전"] },
         { code: "040", name: "강연집, 수필집, 연설문집", main: "000 총류", answers: ["강연집", "수필집", "연설문집"] },
         { code: "050", name: "연속간행물", main: "000 총류", answers: ["연속간행물", "일반연속간행물", "잡지"] },
-        { code: "060", name: "일반 학회, 단체, 협회, 기관", main: "000 총류", answers: ["학회", "단체", "협회", "기관", "일반학회", "일반단체"] },
+        { code: "060", name: "일반 학회, 단체, 협회, 기관", main: "000 총류", answers: ["학회", "단체", "협회", "기관", "일반학회", "일반단체", "일반 학회, 단체, 협회, 기관", "일반 학회, 단체"] },
         { code: "070", name: "신문, 언론, 저널리즘", main: "000 총류", answers: ["신문", "언론", "저널리즘", "신문, 언론, 저널리즘"] },
         { code: "080", name: "일반 전집, 총서", main: "000 총류", answers: ["전집", "총서", "일반전집", "일반총서"] },
         { code: "090", name: "향토자료", main: "000 총류", answers: ["향토자료", "향토"] },
@@ -199,10 +199,10 @@
         { code: "300", name: "사회과학", main: "300 사회과학", answers: ["사회과학"] },
         { code: "310", name: "통계자료", main: "300 사회과학", answers: ["통계자료", "통계", "통계학"] },
         { code: "320", name: "경제학", main: "300 사회과학", answers: ["경제학", "경제"] },
-        { code: "330", name: "사회학, 사회문제", main: "300 사회과학", answers: ["사회학", "사회문제"] },
+        { code: "330", name: "사회학, 사회문제", main: "300 사회과학", answers: ["사회학", "사회문제", "사회학, 사회문제"] },
         { code: "340", name: "정치학", main: "300 사회과학", answers: ["정치학", "정치"] },
         { code: "350", name: "행정학", main: "300 사회과학", answers: ["행정학", "행정"] },
-        { code: "360", name: "법률, 법학", main: "300 사회과학", answers: ["법률", "법학", "법"] },
+        { code: "360", name: "법률, 법학", main: "300 사회과학", answers: ["법률", "법학", "법", "법률, 법학"] },
         { code: "370", name: "교육학", main: "300 사회과학", answers: ["교육학", "교육"] },
         { code: "380", name: "풍습, 예절, 민속학", main: "300 사회과학", answers: ["풍습", "예절", "민속학", "민속"] },
         { code: "390", name: "국방, 군사학", main: "300 사회과학", answers: ["국방", "군사학", "군사"] },
@@ -403,34 +403,37 @@
       ],
 
       TABLE: [
-        /* KDC 보조표 */
-        { code: "K-표1", name: "KDC 표1: 표준구분표 (Standard Subdivisions)", main: "KDC 보조표", answers: ["표준구분표", "표준구분"] },
-        { code: "K-표2", name: "KDC 표2: 지역구분표 (Geographic Areas)", main: "KDC 보조표", answers: ["지역구분표", "지역구분"] },
-        { code: "K-표3", name: "KDC 표3: 한국지역구분표 (Korean Areas)", main: "KDC 보조표", answers: ["한국지역구분표", "한국지역"] },
-        { code: "K-표4", name: "KDC 표4: 한국시대구분표 (Korean Historical Periods)", main: "KDC 보조표", answers: ["한국시대구분표", "한국시대", "시대구분표"] },
-        { code: "K-표5", name: "KDC 표5: 언어구분표 (Languages)", main: "KDC 보조표", answers: ["언어구분표", "언어구분"] },
-        { code: "K-표6", name: "KDC 표6: 언어공통구분표 (Subdivisions of Individual Languages)", main: "KDC 보조표", answers: ["언어공통구분표", "언어공통"] },
-        { code: "K-표7", name: "KDC 표7: 문학형식구분표 (Subdivisions of Individual Literatures)", main: "KDC 보조표", answers: ["문학형식구분표", "문학형식구분", "문학형식"] },
-        { code: "K-표8", name: "KDC 표8: 종교구분표 (Subdivisions of Individual Religions)", main: "KDC 보조표", answers: ["종교구분표", "종교구분"] },
+        /* KDC 표준구분표 */
+        { code: "-01", name: "철학 및 이론", main: " KDC 표준구분표", answers: ["철학, 이론", "철학", "이론"] },
+        { code: "-02", name: "잡저", main: "KDC 표준구분표", answers: ["잡저", "핸드북", "지도법", "편람"] },
+        { code: "-03", name: "사전, 인용어사전, 약어집", main: "KDC 표준구분표", answers: ["사전"] },
+        { code: "-04", name: "강연집, 수필집, 연설문집", main: "KDC 표준구분표", answers: ["강연집, 수필집, 연설문집"] },
+        { code: "-05", name: "연속간행물", main: "KDC 표준구분표", answers: ["연속간행물"] },
+        { code: "-06", name: "각종 단체, 조직(학회, 단체, 협회, 기관, 회의) 및 경영" , main: "KDC 표준구분표", answers: ["단체", "학회", "기관", "경영"] },
+        { code: "-07", name: "지도법, 연구법 및 교육, 교육자료", main: "KDC 표준구분표", answers: ["교육", "연구", "지도", "지도법"] },
+        { code: "-08", name: "총서, 전집, 선집", main: "KDC 표준구분표", answers: ["총서", "전집", "총서, 전집", "총서, 전집, 선집"] },
+        { code: "-09", name: "역사 및 지역구분", main: "KDC 표준구분표", answers: ["역사", "역사, 지역구분", "역사 및 지역구분"] },
 
-        /* DDC 23 보조표 (Tables) */
-        { code: "D-T1", name: "DDC Table 1: Standard Subdivisions (표준구분표)", main: "DDC 보조표", answers: ["표준구분표", "Standard Subdivisions", "T1"] },
-        { code: "D-T2", name: "DDC Table 2: Geographic Areas, Historical Periods, Biography (지역, 시대, 전기)", main: "DDC 보조표", answers: ["지역구분표", "지역, 시대, 전기", "Geographic Areas", "T2"] },
-        { code: "D-T3", name: "DDC Table 3: Subdivisions for Arts, Individual Literatures (예술 및 개별문학)", main: "DDC 보조표", answers: ["예술 및 개별문학", "문학형식구분표", "Individual Literatures", "T3"] },
-        { code: "D-T4", name: "DDC Table 4: Subdivisions of Individual Languages and Language Families (개별언어)", main: "DDC 보조표", answers: ["개별언어", "개별언어구분표", "Individual Languages", "T4"] },
-        { code: "D-T5", name: "DDC Table 5: Ethnic and National Groups (민족 및 국적구분표)", main: "DDC 보조표", answers: ["민족 및 국적구분표", "민족구분표", "Ethnic and National Groups", "T5"] },
-        { code: "D-T6", name: "DDC Table 6: Languages (언어표)", main: "DDC 보조표", answers: ["언어표", "언어구분표", "Languages", "T6"] },
+        /* KDC 지역구분표 */
+        { code: "-1", name: "아시아", main: " KDC 지역구분표", answers: ["아시아"] },
+        { code: "-2", name: "유럽", main: "KDC 지역구분표", answers: ["유럽"] },
+        { code: "-3", name: "아프리카", main: "KDC 지역구분표", answers: ["아프리카"] },
+        { code: "-4", name: "북아메리카", main: "KDC 지역구분표", answers: ["북아메리카"] },
+        { code: "-5", name: "남아메리카(남미)", main: "KDC 지역구분표", answers: ["남아메리카"] },
+        { code: "-6", name: "오세아니아, 양극지방" , main: "KDC 지역구분표", answers: ["오세아니아, 양극지방"] },
+        { code: "-7", name: "지역구분 일반", main: "KDC 지역구분표", answers: ["지역구분 일반"] },
+        { code: "-8", name: "해양", main: "KDC 지역구분표", answers: ["해양"] },
 
-        /* 표준구분 세부 항목 */
-        { code: "-01", name: "철학 및 이론 (Philosophy & theory)", main: "표준구분 (Table 1)", answers: ["철학 및 이론", "철학", "이론"] },
-        { code: "-02", name: "잡저, 핸드북, 지도법 (Miscellany)", main: "표준구분 (Table 1)", answers: ["잡저", "핸드북", "지도법", "편람"] },
-        { code: "-03", name: "사전, 백과사전, 용어집 (Dictionaries & encyclopedias)", main: "표준구분 (Table 1)", answers: ["사전", "백과사전", "용어집"] },
-        { code: "-04", name: "특별주제 (Special topics)", main: "표준구분 (Table 1)", answers: ["특별주제"] },
-        { code: "-05", name: "연속간행물, 잡지 (Serial publications)", main: "표준구분 (Table 1)", answers: ["연속간행물", "잡지"] },
-        { code: "-06", name: "단체, 학회, 기관, 경영 (Organizations & management)", main: "표준구분 (Table 1)", answers: ["단체", "학회", "기관", "경영"] },
-        { code: "-07", name: "교육, 연구, 지도 (Education, research, related topics)", main: "표준구분 (Table 1)", answers: ["교육", "연구", "지도"] },
-        { code: "-08", name: "역사인물집단, 전집 (History & description of groups)", main: "표준구분 (Table 1)", answers: ["역사인물집단", "전집", "인물집단"] },
-        { code: "-09", name: "역사적, 지리적 논의 (Historical, geographic, persons treatment)", main: "표준구분 (Table 1)", answers: ["역사적, 지리적 논의", "역사", "지리", "지역구분"] }
+        /* KDC 국어구분표 */
+        { code: "-1", name: "한국어", main: " KDC 국어구분표", answers: ["한국어"] },
+        { code: "-2", name: "중국어", main: "KDC 국어구분표", answers: ["중국어"] },
+        { code: "-3", name: "일본어", main: "KDC 국어구분표", answers: ["일본어"] },
+        { code: "-4", name: "영어", main: "KDC 국어구분표", answers: ["영어"] },
+        { code: "-5", name: "독일어", main: "KDC 국어구분표", answers: ["독일어"] },
+        { code: "-6", name: "프랑스어" , main: "KDC 국어구분표", answers: ["프랑스어"] },
+        { code: "-7", name: "스페인어", main: "KDC 국어구분표", answers: ["스페인어"] },
+        { code: "-8", name: "이탈리아어", main: "KDC 국어구분표", answers: ["이탈리아어"] },
+        { code: "-9", name: "기타제어", main: "KDC 국어구분표", answers: ["기타제어"] },
       ]
     };
 
