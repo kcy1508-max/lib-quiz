@@ -39,9 +39,9 @@
     .stat-item .val { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
 
     /* Quiz Card */
-    .quiz-card { background: var(--card-bg); border-radius: 16px; padding: 22px 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 140px; justify-content: center; position: relative; }
+    .quiz-card { background: var(--card-bg); border-radius: 16px; padding: 24px 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 140px; justify-content: center; position: relative; }
     .category-badge { position: absolute; top: 12px; left: 16px; font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #eff6ff; color: var(--primary); }
-    .question-type { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 8px; margin-top: 14px; }
+    .question-type { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 8px; margin-top: 10px; }
     .question-text { font-size: 1.5rem; font-weight: 800; color: var(--text); word-break: keep-all; line-height: 1.3; }
     
     /* 4-Choice Mode */
@@ -155,7 +155,7 @@
 
   <script>
     /* =================================================================
-       1. 데이터셋 (사용자 수정본 완벽 반영 + 복수 정답 answers 지원)
+       1. 데이터셋 (사용자 수정본 완벽 반영 + 복수 정답 answers)
        ================================================================= */
     const DATA = {
       KDC: [
@@ -444,7 +444,7 @@
     let enteredCode = "";
     let stats = { correct: 0, total: 0, streak: 0 };
 
-    // 공백, 특수문자 제거 및 소문자 정규화 함수
+    // 특수문자 및 공백 정규화
     function normalizeStr(str) {
       return (str || "").toString().replace(/[\s\(\)\[\],./\-~_&]/g, "").toLowerCase();
     }
@@ -481,10 +481,11 @@
       const pool = DATA[currentSchema];
       currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
-      document.getElementById('categoryBadge').textContent = currentQuestion.main;
+      const categoryBadge = document.getElementById('categoryBadge');
 
       if (currentQuizType === 'TEXT') {
-        // 타이핑 모드: 분류 코드를 주고 명칭을 묻기
+        // [수정됨] 타이핑 모드에서는 주류 힌트 배지를 숨김
+        categoryBadge.style.display = 'none';
         document.getElementById('questionType').textContent = `[${currentSchema}] 아래 분류 번호의 강목/명칭은?`;
         document.getElementById('questionText').textContent = currentQuestion.code;
         const input = document.getElementById('textAnswerInput');
@@ -492,7 +493,9 @@
         input.disabled = false;
         setTimeout(() => input.focus(), 50);
       } else {
-        // 객관식 및 숫자패드 모드: 명칭을 주고 번호를 묻기
+        // 객관식 및 숫자패드 모드에서는 배지 표시
+        categoryBadge.style.display = 'inline-block';
+        categoryBadge.textContent = currentQuestion.main;
         document.getElementById('questionType').textContent = `[${currentSchema}] 아래 항목의 분류 코드는?`;
         document.getElementById('questionText').textContent = currentQuestion.name;
         renderOptions();
@@ -564,19 +567,16 @@
 
       const normUser = normalizeStr(userText);
 
-      // 허용 가능한 정답 목록 만들기
       const validAnswers = [];
       if (currentQuestion.answers && Array.isArray(currentQuestion.answers)) {
         validAnswers.push(...currentQuestion.answers);
       }
       validAnswers.push(currentQuestion.name);
       
-      // name에서 괄호 안 텍스트나 콤마 구분자 자동 추출하여 정답 후보군에 포함
       const matchParen = currentQuestion.name.match(/\((.*?)\)/);
       if (matchParen) validAnswers.push(matchParen[1]);
       currentQuestion.name.split(/[,/]/).forEach(s => validAnswers.push(s));
 
-      // 정답 여부 대조
       const isCorrect = validAnswers.some(ans => {
         const normAns = normalizeStr(ans);
         return normAns.length > 0 && (normUser === normAns || (normAns.length >= 2 && normUser.includes(normAns)) || (normUser.length >= 2 && normAns.includes(normUser)));
@@ -586,7 +586,6 @@
       handleAnswer(isCorrect, userText);
     }
 
-    // Enter키로 정답 제출
     document.getElementById('textAnswerInput').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         submitTextAnswer();
@@ -605,7 +604,7 @@
       }
       updateStats();
 
-      // Feedback Box
+      // Feedback Box 표시
       const box = document.getElementById('feedbackBox');
       const title = document.getElementById('feedbackTitle');
       const desc = document.getElementById('feedbackDesc');
