@@ -57,7 +57,9 @@
     .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .key-btn { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; font-size: 1.3rem; font-weight: 600; padding: 12px 0; cursor: pointer; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .key-btn:active { background: #f1f5f9; }
-    .key-btn.action { font-size: 0.95rem; background: #e2e8f0; }
+    .key-btn.action { font-size: 1.1rem; background: #e2e8f0; }
+    .key-submit-btn { background: var(--primary); color: #fff; border: none; padding: 12px; font-size: 1rem; font-weight: 700; border-radius: 10px; cursor: pointer; }
+    .key-submit-btn:active { background: var(--primary-dark); }
 
     /* Text Input Mode */
     .text-input-container { display: flex; flex-direction: column; gap: 8px; }
@@ -120,7 +122,7 @@
       <button class="choice-btn" onclick="checkChoice(3)">440</button>
     </div>
 
-    <!-- Keypad UI -->
+    <!-- Keypad UI (하이픈 키 포함 및 분리된 확인 버튼) -->
     <div class="keypad-container" id="keypadArea" style="display: none;">
       <div class="input-display" id="keypadDisplay">___</div>
       <div class="keypad-grid">
@@ -133,10 +135,11 @@
         <button class="key-btn" onclick="pressNum('7')">7</button>
         <button class="key-btn" onclick="pressNum('8')">8</button>
         <button class="key-btn" onclick="pressNum('9')">9</button>
-        <button class="key-btn action" onclick="clearNum()">C</button>
+        <button class="key-btn action" onclick="pressNum('-')">-</button>
         <button class="key-btn" onclick="pressNum('0')">0</button>
-        <button class="key-btn action" onclick="submitNum()">입력</button>
+        <button class="key-btn action" onclick="clearNum()">C</button>
       </div>
+      <button class="key-submit-btn" onclick="submitNum()">정답 입력 확인 ↵</button>
     </div>
 
     <!-- Text Input UI (직접 타이핑 모드) -->
@@ -155,7 +158,7 @@
 
   <script>
     /* =================================================================
-       1. 데이터셋 (사용자 수정본 완벽 반영 + 복수 정답 answers)
+       1. 데이터셋 (사용자 정의 데이터 완전 보존)
        ================================================================= */
     const DATA = {
       KDC: [
@@ -433,7 +436,7 @@
         { code: "-6", name: "프랑스어" , main: "KDC 국어구분표", answers: ["프랑스어"] },
         { code: "-7", name: "스페인어", main: "KDC 국어구분표", answers: ["스페인어"] },
         { code: "-8", name: "이탈리아어", main: "KDC 국어구분표", answers: ["이탈리아어"] },
-        { code: "-9", name: "기타제어", main: "KDC 국어구분표", answers: ["기타제어"] },
+        { code: "-9", name: "기타제어", main: "KDC 국어구분표", answers: ["기타제어"] }
       ]
     };
 
@@ -457,9 +460,6 @@
       document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
         btn.classList.toggle('active', ['KDC', 'DDC', 'TABLE'][idx] === schema);
       });
-      if (schema === 'TABLE' && currentQuizType === 'KEYPAD') {
-        switchQuizType('4CHOICE');
-      }
       nextQuestion();
     }
 
@@ -484,11 +484,12 @@
       const pool = DATA[currentSchema];
       currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
+      // 주류 배지: 단답형 모드에서도 정상 표시되도록 설정
       const categoryBadge = document.getElementById('categoryBadge');
+      categoryBadge.style.display = 'inline-block';
+      categoryBadge.textContent = currentQuestion.main;
 
       if (currentQuizType === 'TEXT') {
-        // [수정됨] 타이핑 모드에서는 주류 힌트 배지를 숨김
-        categoryBadge.style.display = 'none';
         document.getElementById('questionType').textContent = `[${currentSchema}] 아래 분류 번호의 강목/명칭은?`;
         document.getElementById('questionText').textContent = currentQuestion.code;
         const input = document.getElementById('textAnswerInput');
@@ -496,9 +497,6 @@
         input.disabled = false;
         setTimeout(() => input.focus(), 50);
       } else {
-        // 객관식 및 숫자패드 모드에서는 배지 표시
-        categoryBadge.style.display = 'inline-block';
-        categoryBadge.textContent = currentQuestion.main;
         document.getElementById('questionType').textContent = `[${currentSchema}] 아래 항목의 분류 코드는?`;
         document.getElementById('questionText').textContent = currentQuestion.name;
         renderOptions();
@@ -542,9 +540,9 @@
       });
     }
 
-    /* 숫자패드 로직 */
+    /* 숫자패드 로직 (하이픈 지원 & 스마트 숫자 매핑) */
     function pressNum(digit) {
-      if (enteredCode.length < 3) {
+      if (enteredCode.length < 5) {
         enteredCode += digit;
         updateKeypadDisplay();
       }
@@ -554,11 +552,32 @@
       updateKeypadDisplay();
     }
     function updateKeypadDisplay() {
-      document.getElementById('keypadDisplay').textContent = enteredCode.padEnd(3, '_');
+      document.getElementById('keypadDisplay').textContent = enteredCode.length > 0 ? enteredCode : "___";
     }
+
+    function isCodeMatch(inputStr, targetStr) {
+      const nInput = normalizeStr(inputStr);
+      const nTarget = normalizeStr(targetStr);
+      if (!nInput || !nTarget) return false;
+      if (nInput === nTarget) return true;
+      // 숫자 변환 비교 (예: -01 문제에 01 또는 1을 입력해도 정답 처리)
+      const numInput = parseInt(nInput, 10);
+      const numTarget = parseInt(nTarget, 10);
+      if (!isNaN(numInput) && !isNaN(numTarget) && numInput === numTarget) {
+        return true;
+      }
+      return false;
+    }
+
     function submitNum() {
       if (enteredCode.length === 0) return;
-      const isCorrect = enteredCode === currentQuestion.code;
+
+      const validCodeList = [
+        currentQuestion.code,
+        ...(currentQuestion.answers || [])
+      ];
+
+      const isCorrect = validCodeList.some(ans => isCodeMatch(enteredCode, ans));
       handleAnswer(isCorrect, enteredCode);
     }
 
