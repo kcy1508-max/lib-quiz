@@ -30,7 +30,7 @@
     /* Mode Selector */
     .mode-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.85rem; }
     .mode-toggle { display: flex; gap: 4px; }
-    .mode-toggle button { border: 1px solid var(--border); background: #fff; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; }
+    .mode-toggle button { border: 1px solid var(--border); background: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 600; }
     .mode-toggle button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     
     /* Stats Bar */
@@ -39,10 +39,10 @@
     .stat-item .val { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
 
     /* Quiz Card */
-    .quiz-card { background: var(--card-bg); border-radius: 16px; padding: 20px 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 140px; justify-content: center; position: relative; }
+    .quiz-card { background: var(--card-bg); border-radius: 16px; padding: 22px 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 140px; justify-content: center; position: relative; }
     .category-badge { position: absolute; top: 12px; left: 16px; font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #eff6ff; color: var(--primary); }
-    .question-type { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 6px; margin-top: 14px; }
-    .question-text { font-size: 1.35rem; font-weight: 800; color: var(--text); word-break: keep-all; line-height: 1.3; }
+    .question-type { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 8px; margin-top: 14px; }
+    .question-text { font-size: 1.5rem; font-weight: 800; color: var(--text); word-break: keep-all; line-height: 1.3; }
     
     /* 4-Choice Mode */
     .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -59,10 +59,17 @@
     .key-btn:active { background: #f1f5f9; }
     .key-btn.action { font-size: 0.95rem; background: #e2e8f0; }
 
+    /* Text Input Mode */
+    .text-input-container { display: flex; flex-direction: column; gap: 8px; }
+    .text-input-box { width: 100%; border: 2px solid var(--border); border-radius: 10px; font-size: 1.15rem; font-weight: 600; padding: 12px 14px; text-align: center; outline: none; transition: border-color 0.2s; }
+    .text-input-box:focus { border-color: var(--primary); background: #fff; }
+    .text-submit-btn { background: var(--primary); color: #fff; border: none; padding: 12px; font-size: 1rem; font-weight: 700; border-radius: 10px; cursor: pointer; }
+    .text-submit-btn:active { background: var(--primary-dark); }
+
     /* Feedback Modal / Box */
     .feedback-box { display: none; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; animation: fadeIn 0.2s; }
-    .feedback-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
-    .feedback-desc { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 10px; line-height: 1.4; }
+    .feedback-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 4px; }
+    .feedback-desc { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 10px; line-height: 1.4; }
     .next-btn { background: var(--primary); color: #fff; border: none; padding: 10px 20px; font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -87,6 +94,7 @@
       <div class="mode-toggle">
         <button id="mode4" class="active" onclick="switchQuizType('4CHOICE')">4지선다</button>
         <button id="modeKeypad" onclick="switchQuizType('KEYPAD')">숫자패드</button>
+        <button id="modeText" onclick="switchQuizType('TEXT')">항목명 입력</button>
       </div>
     </div>
 
@@ -131,6 +139,12 @@
       </div>
     </div>
 
+    <!-- Text Input UI (직접 타이핑 모드) -->
+    <div class="text-input-container" id="textInputArea" style="display: none;">
+      <input type="text" id="textAnswerInput" class="text-input-box" placeholder="항목명을 입력하세요 (예: 물리학)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="text-submit-btn" onclick="submitTextAnswer()">정답 확인 (Enter)</button>
+    </div>
+
     <!-- Feedback -->
     <div class="feedback-box" id="feedbackBox">
       <div class="feedback-title" id="feedbackTitle">정답입니다! 👏</div>
@@ -141,282 +155,282 @@
 
   <script>
     /* =================================================================
-       1. 데이터셋 (KDC 6판 100강목, DDC 23판 100강목, KDC/DDC 보조표)
+       1. 데이터셋 (사용자 수정본 완벽 반영 + 복수 정답 answers 지원)
        ================================================================= */
     const DATA = {
       KDC: [
         /* 000 총류 */
-        { code: "000", name: "총류", main: "000 총류" },
-        { code: "010", name: "도서학, 서지학", main: "000 총류" },
-        { code: "020", name: "문헌정보학, 도서관학", main: "000 총류" },
-        { code: "030", name: "백과사전", main: "000 총류" },
-        { code: "040", name: "강연집, 수필집, 연설문집", main: "000 총류" },
-        { code: "050", name: "연속간행물", main: "000 총류" },
-        { code: "060", name: "일반 학회, 단체, 협회, 기관", main: "000 총류" },
-        { code: "070", name: "신문, 언론, 저널리즘", main: "000 총류" },
-        { code: "080", name: "일반 전집, 총서", main: "000 총류" },
-        { code: "090", name: "향토자료", main: "000 총류" },
+        { code: "000", name: "총류", main: "000 총류", answers: ["총류"] },
+        { code: "010", name: "도서학, 서지학", main: "000 총류", answers: ["도서학", "서지학", "도서학, 서지학"] },
+        { code: "020", name: "문헌정보학, 도서관학", main: "000 총류", answers: ["문헌정보학", "도서관학", "문헌정보학, 도서관학"] },
+        { code: "030", name: "백과사전", main: "000 총류", answers: ["백과사전", "일반백과사전"] },
+        { code: "040", name: "강연집, 수필집, 연설문집", main: "000 총류", answers: ["강연집", "수필집", "연설문집"] },
+        { code: "050", name: "연속간행물", main: "000 총류", answers: ["연속간행물", "일반연속간행물", "잡지"] },
+        { code: "060", name: "일반 학회, 단체, 협회, 기관", main: "000 총류", answers: ["학회", "단체", "협회", "기관", "일반학회", "일반단체"] },
+        { code: "070", name: "신문, 언론, 저널리즘", main: "000 총류", answers: ["신문", "언론", "저널리즘", "신문, 언론, 저널리즘"] },
+        { code: "080", name: "일반 전집, 총서", main: "000 총류", answers: ["전집", "총서", "일반전집", "일반총서"] },
+        { code: "090", name: "향토자료", main: "000 총류", answers: ["향토자료", "향토"] },
 
         /* 100 철학 */
-        { code: "100", name: "철학", main: "100 철학" },
-        { code: "110", name: "형이상학", main: "100 철학" },
-        { code: "120", name: "인식론, 인과론, 인간학", main: "100 철학" },
-        { code: "130", name: "철학의 체계", main: "100 철학" },
-        { code: "140", name: "경학", main: "100 철학" },
-        { code: "150", name: "동양철학, 동양사상", main: "100 철학" },
-        { code: "160", name: "서양철학", main: "100 철학" },
-        { code: "170", name: "논리학", main: "100 철학" },
-        { code: "180", name: "심리학", main: "100 철학" },
-        { code: "190", name: "윤리학, 도덕철학", main: "100 철학" },
+        { code: "100", name: "철학", main: "100 철학", answers: ["철학"] },
+        { code: "110", name: "형이상학", main: "100 철학", answers: ["형이상학"] },
+        { code: "120", name: "인식론, 인과론, 인간학", main: "100 철학", answers: ["인식론", "인과론", "인간학"] },
+        { code: "130", name: "철학의 체계", main: "100 철학", answers: ["철학의 체계", "철학체계"] },
+        { code: "140", name: "경학", main: "100 철학", answers: ["경학"] },
+        { code: "150", name: "동양철학, 동양사상", main: "100 철학", answers: ["동양철학", "동양사상", "동양철학, 사상"] },
+        { code: "160", name: "서양철학", main: "100 철학", answers: ["서양철학"] },
+        { code: "170", name: "논리학", main: "100 철학", answers: ["논리학"] },
+        { code: "180", name: "심리학", main: "100 철학", answers: ["심리학"] },
+        { code: "190", name: "윤리학, 도덕철학", main: "100 철학", answers: ["윤리학", "도덕철학", "도덕"] },
 
         /* 200 종교 */
-        { code: "200", name: "종교", main: "200 종교" },
-        { code: "210", name: "비교종교학", main: "200 종교" },
-        { code: "220", name: "불교", main: "200 종교" },
-        { code: "230", name: "기독교", main: "200 종교" },
-        { code: "240", name: "도교", main: "200 종교" },
-        { code: "250", name: "천도교", main: "200 종교" },
-        { code: "260", name: "공기호", main: "200 종교" },
-        { code: "270", name: "힌두교, 브라만교", main: "200 종교" },
-        { code: "280", name: "이슬람교 (회교)", main: "200 종교" },
-        { code: "290", name: "기타 제종교", main: "200 종교" },
+        { code: "200", name: "종교", main: "200 종교", answers: ["종교"] },
+        { code: "210", name: "비교종교학", main: "200 종교", answers: ["비교종교", "비교종교학"] },
+        { code: "220", name: "불교", main: "200 종교", answers: ["불교"] },
+        { code: "230", name: "기독교", main: "200 종교", answers: ["기독교", "그리스도교"] },
+        { code: "240", name: "도교", main: "200 종교", answers: ["도교"] },
+        { code: "250", name: "천도교", main: "200 종교", answers: ["천도교"] },
+        { code: "260", name: "200 종교 공기호", main: "200 종교", answers: ["공기호", "종교 공기호", "신도", "신사"] },
+        { code: "270", name: "힌두교, 브라만교", main: "200 종교", answers: ["힌두교", "브라만교", "바라문교"] },
+        { code: "280", name: "이슬람교 (회교)", main: "200 종교", answers: ["이슬람교", "회교", "이슬람"] },
+        { code: "290", name: "기타 제종교", main: "200 종교", answers: ["기타 제종교", "기타제종교", "기타 종교"] },
 
         /* 300 사회과학 */
-        { code: "300", name: "사회과학", main: "300 사회과학" },
-        { code: "310", name: "통계자료", main: "300 사회과학" },
-        { code: "320", name: "경제학", main: "300 사회과학" },
-        { code: "330", name: "사회학, 사회문제", main: "300 사회과학" },
-        { code: "340", name: "정치학", main: "300 사회과학" },
-        { code: "350", name: "행정학", main: "300 사회과학" },
-        { code: "360", name: "법률, 법학", main: "300 사회과학" },
-        { code: "370", name: "교육학", main: "300 사회과학" },
-        { code: "380", name: "풍습, 예절, 민속학", main: "300 사회과학" },
-        { code: "390", name: "국방, 군사학", main: "300 사회과학" },
+        { code: "300", name: "사회과학", main: "300 사회과학", answers: ["사회과학"] },
+        { code: "310", name: "통계자료", main: "300 사회과학", answers: ["통계자료", "통계", "통계학"] },
+        { code: "320", name: "경제학", main: "300 사회과학", answers: ["경제학", "경제"] },
+        { code: "330", name: "사회학, 사회문제", main: "300 사회과학", answers: ["사회학", "사회문제"] },
+        { code: "340", name: "정치학", main: "300 사회과학", answers: ["정치학", "정치"] },
+        { code: "350", name: "행정학", main: "300 사회과학", answers: ["행정학", "행정"] },
+        { code: "360", name: "법률, 법학", main: "300 사회과학", answers: ["법률", "법학", "법"] },
+        { code: "370", name: "교육학", main: "300 사회과학", answers: ["교육학", "교육"] },
+        { code: "380", name: "풍습, 예절, 민속학", main: "300 사회과학", answers: ["풍습", "예절", "민속학", "민속"] },
+        { code: "390", name: "국방, 군사학", main: "300 사회과학", answers: ["국방", "군사학", "군사"] },
 
         /* 400 자연과학 */
-        { code: "400", name: "자연과학 (순수과학)", main: "400 자연과학" },
-        { code: "410", name: "수학", main: "400 자연과학" },
-        { code: "420", name: "물리학", main: "400 자연과학" },
-        { code: "430", name: "화학", main: "400 자연과학" },
-        { code: "440", name: "천문학", main: "400 자연과학" },
-        { code: "450", name: "지구과학", main: "400 자연과학" },
-        { code: "460", name: "광물학", main: "400 자연과학" },
-        { code: "470", name: "생명과학", main: "400 자연과학" },
-        { code: "480", name: "식물학", main: "400 자연과학" },
-        { code: "490", name: "동물학", main: "400 자연과학" },
+        { code: "400", name: "자연과학 (순수과학)", main: "400 자연과학", answers: ["자연과학", "순수과학"] },
+        { code: "410", name: "수학", main: "400 자연과학", answers: ["수학"] },
+        { code: "420", name: "물리학", main: "400 자연과학", answers: ["물리학", "물리"] },
+        { code: "430", name: "화학", main: "400 자연과학", answers: ["화학"] },
+        { code: "440", name: "천문학", main: "400 자연과학", answers: ["천문학", "천문"] },
+        { code: "450", name: "지구과학", main: "400 자연과학", answers: ["지구과학", "지학"] },
+        { code: "460", name: "광물학", main: "400 자연과학", answers: ["광물학", "광물"] },
+        { code: "470", name: "생명과학", main: "400 자연과학", answers: ["생명과학", "생물학", "생물"] },
+        { code: "480", name: "식물학", main: "400 자연과학", answers: ["식물학", "식물"] },
+        { code: "490", name: "동물학", main: "400 자연과학", answers: ["동물학", "동물"] },
 
         /* 500 기술과학 */
-        { code: "500", name: "기술과학 (응용과학)", main: "500 기술과학" },
-        { code: "510", name: "의학", main: "500 기술과학" },
-        { code: "520", name: "농업, 농학", main: "500 기술과학" },
-        { code: "530", name: "공학, 공학일반, 토목공학, 환경공학", main: "500 기술과학" },
-        { code: "540", name: "건축, 건축학", main: "500 기술과학" },
-        { code: "550", name: "기계공학", main: "500 기술과학" },
-        { code: "560", name: "전기공학, 통신공학, 전자공학", main: "500 기술과학" },
-        { code: "570", name: "화학공학", main: "500 기술과학" },
-        { code: "580", name: "제조업", main: "500 기술과학" },
-        { code: "590", name: "생활과학", main: "500 기술과학" },
+        { code: "500", name: "기술과학 (응용과학)", main: "500 기술과학", answers: ["기술과학", "응용과학"] },
+        { code: "510", name: "의학", main: "500 기술과학", answers: ["의학", "의료"] },
+        { code: "520", name: "농업, 농학", main: "500 기술과학", answers: ["농업", "농학"] },
+        { code: "530", name: "공학, 공학일반, 토목공학, 환경공학", main: "500 기술과학", answers: ["공학", "공학일반", "토목공학", "환경공학"] },
+        { code: "540", name: "건축, 건축학", main: "500 기술과학", answers: ["건축", "건축학", "건축공학"] },
+        { code: "550", name: "기계공학", main: "500 기술과학", answers: ["기계공학", "기계"] },
+        { code: "560", name: "전기공학, 통신공학, 전자공학", main: "500 기술과학", answers: ["전기공학", "통신공학", "전자공학", "전기", "전자", "통신"] },
+        { code: "570", name: "화학공학", main: "500 기술과학", answers: ["화학공학", "화공"] },
+        { code: "580", name: "제조업", main: "500 기술과학", answers: ["제조업", "경공업", "공업"] },
+        { code: "590", name: "생활과학", main: "500 기술과학", answers: ["생활과학", "가정학", "가사"] },
 
         /* 600 예술 */
-        { code: "600", name: "예술", main: "600 예술" },
-        { code: "610", name: "공기호", main: "600 예술" },
-        { code: "620", name: "조각, 조형미술", main: "600 예술" },
-        { code: "630", name: "공예", main: "600 예술" },
-        { code: "640", name: "서예", main: "600 예술" },
-        { code: "650", name: "회화, 도화, 디자인", main: "600 예술" },
-        { code: "660", name: "사진예술", main: "600 예술" },
-        { code: "670", name: "음악", main: "600 예술" },
-        { code: "680", name: "공연예술, 매체예술", main: "600 예술" },
-        { code: "690", name: "오락, 스포츠", main: "600 예술" },
+        { code: "600", name: "예술", main: "600 예술", answers: ["예술"] },
+        { code: "610", name: "600 예술 공기호", main: "600 예술", answers: ["공기호", "예술 공기호"] },
+        { code: "620", name: "조각, 조형미술", main: "600 예술", answers: ["조각", "조형미술"] },
+        { code: "630", name: "공예", main: "600 예술", answers: ["공예"] },
+        { code: "640", name: "서예", main: "600 예술", answers: ["서예"] },
+        { code: "650", name: "회화, 도화, 디자인", main: "600 예술", answers: ["회화", "도화", "디자인"] },
+        { code: "660", name: "사진예술", main: "600 예술", answers: ["사진", "사진예술"] },
+        { code: "670", name: "음악", main: "600 예술", answers: ["음악"] },
+        { code: "680", name: "공연예술, 매체예술", main: "600 예술", answers: ["공연예술", "매체예술", "연극", "영화"] },
+        { code: "690", name: "오락, 스포츠", main: "600 예술", answers: ["오락", "스포츠", "체육"] },
 
         /* 700 언어 */
-        { code: "700", name: "언어", main: "700 언어" },
-        { code: "710", name: "한국어", main: "700 언어" },
-        { code: "720", name: "중국어", main: "700 언어" },
-        { code: "730", name: "일본어 및 기타 아시아 제어", main: "700 언어" },
-        { code: "740", name: "영어", main: "700 언어" },
-        { code: "750", name: "독일어", main: "700 언어" },
-        { code: "760", name: "프랑스어", main: "700 언어" },
-        { code: "770", name: "스페인어 및 포르투갈어", main: "700 언어" },
-        { code: "780", name: "이탈리아어", main: "700 언어" },
-        { code: "790", name: "기타 제어", main: "700 언어" },
+        { code: "700", name: "언어", main: "700 언어", answers: ["언어", "어학"] },
+        { code: "710", name: "한국어", main: "700 언어", answers: ["한국어", "국어"] },
+        { code: "720", name: "중국어", main: "700 언어", answers: ["중국어", "한어"] },
+        { code: "730", name: "일본어 및 기타 아시아 제어", main: "700 언어", answers: ["일본어", "아시아 제어"] },
+        { code: "740", name: "영어", main: "700 언어", answers: ["영어"] },
+        { code: "750", name: "독일어", main: "700 언어", answers: ["독일어", "독어"] },
+        { code: "760", name: "프랑스어", main: "700 언어", answers: ["프랑스어", "불어"] },
+        { code: "770", name: "스페인어 및 포르투갈어", main: "700 언어", answers: ["스페인어", "포르투갈어"] },
+        { code: "780", name: "이탈리아어", main: "700 언어", answers: ["이탈리아어", "이태리어"] },
+        { code: "790", name: "기타 제어", main: "700 언어", answers: ["기타 제어", "기타제어"] },
 
         /* 800 문학 */
-        { code: "800", name: "문학", main: "800 문학" },
-        { code: "810", name: "한국문학", main: "800 문학" },
-        { code: "820", name: "중국문학", main: "800 문학" },
-        { code: "830", name: "일본문학 및 기타 아시아문학", main: "800 문학" },
-        { code: "840", name: "영미문학", main: "800 문학" },
-        { code: "850", name: "독일문학", main: "800 문학" },
-        { code: "860", name: "프랑스문학", main: "800 문학" },
-        { code: "870", name: "스페인 및 포르투갈문학", main: "800 문학" },
-        { code: "880", name: "이탈리아문학", main: "800 문학" },
-        { code: "890", name: "기타 제문학", main: "800 문학" },
+        { code: "800", name: "문학", main: "800 문학", answers: ["문학"] },
+        { code: "810", name: "한국문학", main: "800 문학", answers: ["한국문학", "국문학"] },
+        { code: "820", name: "중국문학", main: "800 문학", answers: ["중국문학"] },
+        { code: "830", name: "일본문학 및 기타 아시아문학", main: "800 문학", answers: ["일본문학", "아시아문학"] },
+        { code: "840", name: "영미문학", main: "800 문학", answers: ["영미문학", "영어문학", "영문학"] },
+        { code: "850", name: "독일문학", main: "800 문학", answers: ["독일문학", "독문학"] },
+        { code: "860", name: "프랑스문학", main: "800 문학", answers: ["프랑스문학", "불문학"] },
+        { code: "870", name: "스페인 및 포르투갈문학", main: "800 문학", answers: ["스페인문학", "포르투갈문학"] },
+        { code: "880", name: "이탈리아문학", main: "800 문학", answers: ["이탈리아문학"] },
+        { code: "890", name: "기타 제문학", main: "800 문학", answers: ["기타 제문학", "기타제문학"] },
 
         /* 900 역사 */
-        { code: "900", name: "역사", main: "900 역사" },
-        { code: "910", name: "아시아", main: "900 역사" },
-        { code: "920", name: "유럽", main: "900 역사" },
-        { code: "930", name: "아프리카", main: "900 역사" },
-        { code: "940", name: "북아메리카", main: "900 역사" },
-        { code: "950", name: "남아메리카", main: "900 역사" },
-        { code: "960", name: "오세아니아, 양극지방", main: "900 역사" },
-        { code: "970", name: "공기호", main: "900 역사" },
-        { code: "980", name: "지리", main: "900 역사" },
-        { code: "990", name: "전기", main: "900 역사" }
+        { code: "900", name: "역사", main: "900 역사", answers: ["역사", "사학"] },
+        { code: "910", name: "아시아", main: "900 역사", answers: ["아시아", "아시아사", "아시아역사"] },
+        { code: "920", name: "유럽", main: "900 역사", answers: ["유럽", "유럽사", "유럽역사"] },
+        { code: "930", name: "아프리카", main: "900 역사", answers: ["아프리카", "아프리카사", "아프리카역사"] },
+        { code: "940", name: "북아메리카", main: "900 역사", answers: ["북아메리카", "북아메리카사", "북미"] },
+        { code: "950", name: "남아메리카", main: "900 역사", answers: ["남아메리카", "남아메리카사", "남미"] },
+        { code: "960", name: "오세아니아, 양극지방", main: "900 역사", answers: ["오세아니아", "양극지방", "대양주"] },
+        { code: "970", name: "900 역사 공기호", main: "900 역사", answers: ["공기호", "역사 공기호"] },
+        { code: "980", name: "지리", main: "900 역사", answers: ["지리", "지리학"] },
+        { code: "990", name: "전기", main: "900 역사", answers: ["전기", "인물전기"] }
       ],
 
       DDC: [
         /* 000 Computer science, information & general works */
-        { code: "000", name: "Computer science, info & general works (총류, 컴퓨터)", main: "000 General works" },
-        { code: "010", name: "Bibliographies (서지학)", main: "000 General works" },
-        { code: "020", name: "Library & information sciences (문헌정보학)", main: "000 General works" },
-        { code: "030", name: "General encyclopedic works (백과사전)", main: "000 General works" },
-        { code: "040", name: "[Unassigned - 미부여]", main: "000 General works" },
-        { code: "050", name: "Magazines, journals & serials (연속간행물)", main: "000 General works" },
-        { code: "060", name: "Associations, organizations & museums (학회, 박물관)", main: "000 General works" },
-        { code: "070", name: "News media, journalism & publishing (언론, 출판)", main: "000 General works" },
-        { code: "080", name: "Quotations, general collections (일반총서, 명언)", main: "000 General works" },
-        { code: "090", name: "Manuscripts & rare books (필사본, 희귀본)", main: "000 General works" },
+        { code: "000", name: "Computer science, information & general works (컴퓨터, 총류)", main: "000 General works", answers: ["컴퓨터", "총류", "컴퓨터, 총류", "Computer science"] },
+        { code: "010", name: "Bibliographies (서지학)", main: "000 General works", answers: ["서지학", "서지", "Bibliographies"] },
+        { code: "020", name: "Library & information sciences (문헌정보학)", main: "000 General works", answers: ["문헌정보학", "도서관학", "Library science"] },
+        { code: "030", name: "General encyclopedic works (일반백과사전)", main: "000 General works", answers: ["백과사전", "일반백과사전", "Encyclopedias"] },
+        { code: "040", name: "000 총류 공기호", main: "000 General works", answers: ["공기호", "총류 공기호", "미부여"] },
+        { code: "050", name: "Magazines, journals & serials (일반연속간행물)", main: "000 General works", answers: ["연속간행물", "일반연속간행물", "잡지", "Magazines", "Serials"] },
+        { code: "060", name: "Associations, organizations & museums (일반 기관, 박물관학)", main: "000 General works", answers: ["기관", "박물관", "박물관학", "학회", "Organizations", "Museums"] },
+        { code: "070", name: "News media, journalism & publishing (신문, 저널리즘, 출판)", main: "000 General works", answers: ["신문", "저널리즘", "출판", "언론", "Publishing", "Journalism"] },
+        { code: "080", name: "Quotations, general collections (인용, 일반총서)", main: "000 General works", answers: ["인용", "총서", "일반총서", "Quotations"] },
+        { code: "090", name: "Manuscripts & rare books (필사본, 희귀본)", main: "000 General works", answers: ["필사본", "희귀본", "Manuscripts", "Rare books"] },
 
         /* 100 Philosophy & psychology */
-        { code: "100", name: "Philosophy & psychology (철학 및 심리학)", main: "100 Philosophy" },
-        { code: "110", name: "Metaphysics (형이상학)", main: "100 Philosophy" },
-        { code: "120", name: "Epistemology, causation, humankind (인식론)", main: "100 Philosophy" },
-        { code: "130", name: "Parapsychology & occultism (심령학, 오컬트)", main: "100 Philosophy" },
-        { code: "140", name: "Specific philosophical schools (특정 철학학파)", main: "100 Philosophy" },
-        { code: "150", name: "Psychology (심리학)", main: "100 Philosophy" },
-        { code: "160", name: "Philosophical logic (논리학)", main: "100 Philosophy" },
-        { code: "170", name: "Ethics / Moral philosophy (윤리학)", main: "100 Philosophy" },
-        { code: "180", name: "Ancient, medieval & eastern philosophy (고대, 중세, 동양철학)", main: "100 Philosophy" },
-        { code: "190", name: "Modern western philosophy (근현대 서양철학)", main: "100 Philosophy" },
+        { code: "100", name: "Philosophy & psychology (철학, 심리학)", main: "100 Philosophy", answers: ["철학", "심리학", "Philosophy", "Psychology"] },
+        { code: "110", name: "Metaphysics (형이상학)", main: "100 Philosophy", answers: ["형이상학", "Metaphysics"] },
+        { code: "120", name: "Epistemology (인식론, 인과관계론, 인간론)", main: "100 Philosophy", answers: ["인식론", "인과관계론", "인간론", "Epistemology"] },
+        { code: "130", name: "Parapsychology & occultism (초심리학, 신비주의)", main: "100 Philosophy", answers: ["초심리학", "신비주의", "오컬트", "Parapsychology", "Occultism"] },
+        { code: "140", name: "Philosophical schools of thought (특정 철학학파)", main: "100 Philosophy", answers: ["철학학파", "특정 철학학파", "Philosophical schools"] },
+        { code: "150", name: "Psychology (심리학)", main: "100 Philosophy", answers: ["심리학", "심리", "Psychology"] },
+        { code: "160", name: "Philosophical logic (논리학)", main: "100 Philosophy", answers: ["논리학", "Logic"] },
+        { code: "170", name: "Ethics (윤리학)", main: "100 Philosophy", answers: ["윤리학", "도덕", "Ethics"] },
+        { code: "180", name: "Ancient, medieval & eastern philosophy (고대, 중세, 동양철학)", main: "100 Philosophy", answers: ["고대철학", "중세철학", "동양철학", "Ancient philosophy", "Eastern philosophy"] },
+        { code: "190", name: "Modern western philosophy (근대 서양철학)", main: "100 Philosophy", answers: ["서양철학", "근대 서양철학", "Modern western philosophy"] },
 
         /* 200 Religion */
-        { code: "200", name: "Religion (종교)", main: "200 Religion" },
-        { code: "210", name: "Philosophy & theory of religion (종교철학 및 이론)", main: "200 Religion" },
-        { code: "220", name: "The Bible (성경)", main: "200 Religion" },
-        { code: "230", name: "Christianity & Christian theology (기독교 신학)", main: "200 Religion" },
-        { code: "240", name: "Christian practice & observance (기독교 실천, 도덕)", main: "200 Religion" },
-        { code: "250", name: "Christian pastoral practice & religious orders (사목, 수도회)", main: "200 Religion" },
-        { code: "260", name: "Christian organization, social work & worship (교회, 사회사업)", main: "200 Religion" },
-        { code: "270", name: "History of Christianity (교회사)", main: "200 Religion" },
-        { code: "280", name: "Christian denominations (기독교 종파)", main: "200 Religion" },
-        { code: "290", name: "Other religions (기타 종교: 불교, 이슬람 등)", main: "200 Religion" },
+        { code: "200", name: "Religion (종교)", main: "200 Religion", answers: ["종교", "Religion"] },
+        { code: "210", name: "Philosophy & theory of religion (종교철학, 종교이론)", main: "200 Religion", answers: ["종교철학", "종교이론"] },
+        { code: "220", name: "The Bible (성경)", main: "200 Religion", answers: ["성경", "성서", "Bible"] },
+        { code: "230", name: "Christianity (기독교, 기독교신학)", main: "200 Religion", answers: ["기독교", "기독교신학", "신학", "Christianity"] },
+        { code: "240", name: "Christian practice & observance (예배, 행사, 실천)", main: "200 Religion", answers: ["예배", "행사", "기독교 실천", "기독교도덕"] },
+        { code: "250", name: "Christian pastoral practice & religious orders (목회, 목회학, 사목)", main: "200 Religion", answers: ["목회", "목회학", "사목", "수도회"] },
+        { code: "260", name: "Christian organization, social work & worship (기독교 단체, 사회사업)", main: "200 Religion", answers: ["기독교 단체", "교회", "사회사업"] },
+        { code: "270", name: "History of Christianity (기독교 역사, 교회역사)", main: "200 Religion", answers: ["기독교 역사", "교회사", "교회역사"] },
+        { code: "280", name: "Christian denominations (기독교 종파)", main: "200 Religion", answers: ["기독교 종파", "교파", "종파"] },
+        { code: "290", name: "Other religions (기타 종교)", main: "200 Religion", answers: ["기타 종교", "기타종교", "Other religions"] },
 
         /* 300 Social sciences */
-        { code: "300", name: "Social sciences (사회과학)", main: "300 Social sciences" },
-        { code: "310", name: "Statistics (통계학)", main: "300 Social sciences" },
-        { code: "320", name: "Political science (정치학)", main: "300 Social sciences" },
-        { code: "330", name: "Economics (경제학)", main: "300 Social sciences" },
-        { code: "340", name: "Law (법학)", main: "300 Social sciences" },
-        { code: "350", name: "Public administration & military science (행정학, 군사학)", main: "300 Social sciences" },
-        { code: "360", name: "Social problems & services; associations (사회문제, 복지)", main: "300 Social sciences" },
-        { code: "370", name: "Education (교육학)", main: "300 Social sciences" },
-        { code: "380", name: "Commerce, communications & transportation (상업, 통신, 교통)", main: "300 Social sciences" },
-        { code: "390", name: "Customs, etiquette & folklore (풍습, 예절, 민속)", main: "300 Social sciences" },
+        { code: "300", name: "Social sciences (사회과학)", main: "300 Social sciences", answers: ["사회과학", "Social sciences"] },
+        { code: "310", name: "Statistics (일반 통계)", main: "300 Social sciences", answers: ["통계", "일반 통계", "통계학", "Statistics"] },
+        { code: "320", name: "Political science (정치학)", main: "300 Social sciences", answers: ["정치학", "정치", "Political science"] },
+        { code: "330", name: "Economics (경제학)", main: "300 Social sciences", answers: ["경제학", "경제", "Economics"] },
+        { code: "340", name: "Law (법학)", main: "300 Social sciences", answers: ["법학", "법", "Law"] },
+        { code: "350", name: "Public administration & military science (행정학, 군사학)", main: "300 Social sciences", answers: ["행정학", "군사학", "행정", "군사", "Public administration"] },
+        { code: "360", name: "Social problems & services (사회문제, 복지)", main: "300 Social sciences", answers: ["사회문제", "사회복지", "복지", "Social problems"] },
+        { code: "370", name: "Education (교육학)", main: "300 Social sciences", answers: ["교육학", "교육", "Education"] },
+        { code: "380", name: "Commerce, communications & transportation (상업, 통신, 교통)", main: "300 Social sciences", answers: ["상업", "통신", "교통", "무역", "Commerce"] },
+        { code: "390", name: "Customs, etiquette & folklore (풍습, 예절, 민속학)", main: "300 Social sciences", answers: ["풍습", "예절", "민속학", "민속", "Customs", "Folklore"] },
 
         /* 400 Language */
-        { code: "400", name: "Language (언어)", main: "400 Language" },
-        { code: "410", name: "Linguistics (언어학)", main: "400 Language" },
-        { code: "420", name: "English & Old English (영어)", main: "400 Language" },
-        { code: "430", name: "German & related languages (독일어 및 게르만어)", main: "400 Language" },
-        { code: "440", name: "French & related languages (프랑스어 및 로망스어)", main: "400 Language" },
-        { code: "450", name: "Italian, Romanian & related (이탈리아어, 루마니아어)", main: "400 Language" },
-        { code: "460", name: "Spanish & Portuguese (스페인어, 포르투갈어)", main: "400 Language" },
-        { code: "470", name: "Latin & Italic languages (라틴어)", main: "400 Language" },
-        { code: "480", name: "Classical Greek & modern Greek (그리스어)", main: "400 Language" },
-        { code: "490", name: "Other languages (기타 언어: 한국어, 동아시아어 등)", main: "400 Language" },
+        { code: "400", name: "Language (언어)", main: "400 Language", answers: ["언어", "어학", "Language"] },
+        { code: "410", name: "Linguistics (언어학)", main: "400 Language", answers: ["언어학", "Linguistics"] },
+        { code: "420", name: "English & Old English languages (영어)", main: "400 Language", answers: ["영어", "English"] },
+        { code: "430", name: "German & related languages (독일어)", main: "400 Language", answers: ["독일어", "German"] },
+        { code: "440", name: "French & related languages (프랑스어)", main: "400 Language", answers: ["프랑스어", "불어", "French"] },
+        { code: "450", name: "Italian, Romanian & related languages (이탈리아어, 루마니아어)", main: "400 Language", answers: ["이탈리아어", "루마니아어", "이태리어", "Italian"] },
+        { code: "460", name: "Spanish & Portuguese, Galician (스페인어, 포르투갈어)", main: "400 Language", answers: ["스페인어", "포르투갈어", "Spanish", "Portuguese"] },
+        { code: "470", name: "Latin & Italic languages (라틴어, 고대 이탈리아어)", main: "400 Language", answers: ["라틴어", "고대 이탈리아어", "Latin"] },
+        { code: "480", name: "Classical Greek & modern Greek languages (고대 그리스어)", main: "400 Language", answers: ["그리스어", "고대 그리스어", "희랍어", "Greek"] },
+        { code: "490", name: "Other languages (기타 언어)", main: "400 Language", answers: ["기타 언어", "기타언어", "Other languages"] },
 
-        /* 500 Science (Pure science) */
-        { code: "500", name: "Science / Pure sciences (순수과학)", main: "500 Pure sciences" },
-        { code: "510", name: "Mathematics (수학)", main: "500 Pure sciences" },
-        { code: "520", name: "Astronomy & allied sciences (천문학)", main: "500 Pure sciences" },
-        { code: "530", name: "Physics (물리학)", main: "500 Pure sciences" },
-        { code: "540", name: "Chemistry & allied sciences (화학)", main: "500 Pure sciences" },
-        { code: "550", name: "Earth sciences & geology (지구과학, 지질학)", main: "500 Pure sciences" },
-        { code: "560", name: "Fossils & prehistoric life (고생물학, 화석)", main: "500 Pure sciences" },
-        { code: "570", name: "Life sciences; biology (생명과학, 생물학)", main: "500 Pure sciences" },
-        { code: "580", name: "Plants / Botany (식물학)", main: "500 Pure sciences" },
-        { code: "590", name: "Animals / Zoology (동물학)", main: "500 Pure sciences" },
+        /* 500 Science */
+        { code: "500", name: "Science (과학)", main: "500 Science", answers: ["과학", "순수과학", "Science"] },
+        { code: "510", name: "Mathematics (수학)", main: "500 Science", answers: ["수학", "Mathematics", "Math"] },
+        { code: "520", name: "Astronomy (천문학)", main: "500 Science", answers: ["천문학", "천문", "Astronomy"] },
+        { code: "530", name: "Physics (물리학)", main: "500 Science", answers: ["물리학", "물리", "Physics"] },
+        { code: "540", name: "Chemistry (화학)", main: "500 Science", answers: ["화학", "Chemistry"] },
+        { code: "550", name: "Earth sciences & geology (지구과학)", main: "500 Science", answers: ["지구과학", "지질학", "Earth sciences", "Geology"] },
+        { code: "560", name: "Fossils & prehistoric life (고생물학)", main: "500 Science", answers: ["고생물학", "화석", "Fossils"] },
+        { code: "570", name: "Biology (생물학)", main: "500 Science", answers: ["생물학", "생물", "생명과학", "Biology"] },
+        { code: "580", name: "Plants / Botany (식물학)", main: "500 Science", answers: ["식물학", "식물", "Botany", "Plants"] },
+        { code: "590", name: "Animals / Zoology (동물학)", main: "500 Science", answers: ["동물학", "동물", "Zoology", "Animals"] },
 
         /* 600 Technology (Applied sciences) */
-        { code: "600", name: "Technology / Applied sciences (기술과학, 응용과학)", main: "600 Technology" },
-        { code: "610", name: "Medicine & health (의학, 보건학)", main: "600 Technology" },
-        { code: "620", name: "Engineering & applied operations (공학)", main: "600 Technology" },
-        { code: "630", name: "Agriculture & related technologies (농업)", main: "600 Technology" },
-        { code: "640", name: "Home & family management (가정학, 가사)", main: "600 Technology" },
-        { code: "650", name: "Management & public relations (경영학, 홍보)", main: "600 Technology" },
-        { code: "660", name: "Chemical engineering (화학공학)", main: "600 Technology" },
-        { code: "670", name: "Manufacturing (제조업, 공업제조)", main: "600 Technology" },
-        { code: "680", name: "Manufacture for specific uses (특수용도 제조)", main: "600 Technology" },
-        { code: "690", name: "Building & construction (건축공학)", main: "600 Technology" },
+        { code: "600", name: "Technology (기술과학, 응용과학)", main: "600 Technology", answers: ["기술과학", "응용과학", "기술", "Technology"] },
+        { code: "610", name: "Medicine & health (의료, 보건, 의학)", main: "600 Technology", answers: ["의료", "보건", "의학", "Medicine", "Health"] },
+        { code: "620", name: "Engineering (공업, 공학)", main: "600 Technology", answers: ["공업", "공학", "Engineering"] },
+        { code: "630", name: "Agriculture (농업, 농학)", main: "600 Technology", answers: ["농업", "농학", "Agriculture"] },
+        { code: "640", name: "Home & family management (가정, 가정관리)", main: "600 Technology", answers: ["가정", "가정관리", "가정학", "가사"] },
+        { code: "650", name: "Management & public relations (경영 및 보조서비스)", main: "600 Technology", answers: ["경영", "경영학", "홍보", "Management"] },
+        { code: "660", name: "Chemical engineering (화학공학)", main: "600 Technology", answers: ["화학공학", "화공", "Chemical engineering"] },
+        { code: "670", name: "Manufacturing (제조업)", main: "600 Technology", answers: ["제조업", "공업제조", "Manufacturing"] },
+        { code: "680", name: "Manufacture for specific uses (특정제조업)", main: "600 Technology", answers: ["특정제조업", "특수용도제조"] },
+        { code: "690", name: "Construction of buildings (건축공학)", main: "600 Technology", answers: ["건축공학", "건축", "Construction"] },
 
         /* 700 Arts & recreation */
-        { code: "700", name: "Arts & recreation (예술 및 오락)", main: "700 Arts" },
-        { code: "710", name: "Landscaping & area planning (조경, 도시계획)", main: "700 Arts" },
-        { code: "720", name: "Architecture (건축술, 건축미술)", main: "700 Arts" },
-        { code: "730", name: "Sculpture, ceramics & metalwork (조각, 도예)", main: "700 Arts" },
-        { code: "740", name: "Graphic arts & decorative arts (도화, 장식미술, 디자인)", main: "700 Arts" },
-        { code: "750", name: "Painting (회화)", main: "700 Arts" },
-        { code: "760", name: "Printmaking & prints (판화, 인쇄미술)", main: "700 Arts" },
-        { code: "770", name: "Photography, computer art (사진예술)", main: "700 Arts" },
-        { code: "780", name: "Music (음악)", main: "700 Arts" },
-        { code: "790", name: "Sports, games & entertainment (스포츠, 공연예술, 오락)", main: "700 Arts" },
+        { code: "700", name: "Arts & recreation (예술 및 오락)", main: "700 Arts", answers: ["예술", "오락", "Arts"] },
+        { code: "710", name: "Landscaping & area planning (조경, 도시계획)", main: "700 Arts", answers: ["조경", "도시계획", "Landscaping"] },
+        { code: "720", name: "Architecture (건축술)", main: "700 Arts", answers: ["건축술", "건축미술", "Architecture"] },
+        { code: "730", name: "Sculpture, ceramics & metalwork (조각, 조형미술)", main: "700 Arts", answers: ["조각", "조형미술", "도예", "Sculpture"] },
+        { code: "740", name: "Graphic arts & decorative arts (그래픽아트, 장식예술)", main: "700 Arts", answers: ["그래픽아트", "장식예술", "디자인", "도화"] },
+        { code: "750", name: "Painting (회화)", main: "700 Arts", answers: ["회화", "그림", "Painting"] },
+        { code: "760", name: "Printmaking & prints (판화)", main: "700 Arts", answers: ["판화", "인쇄미술", "Prints"] },
+        { code: "770", name: "Photography, computer art, film, video (사진술, 컴퓨터 아트)", main: "700 Arts", answers: ["사진술", "사진", "컴퓨터아트", "Photography"] },
+        { code: "780", name: "Music (음악)", main: "700 Arts", answers: ["음악", "Music"] },
+        { code: "790", name: "Sports, games & entertainment (스포츠, 공연예술, 오락)", main: "700 Arts", answers: ["스포츠", "공연예술", "오락", "체육", "Sports", "Games"] },
 
         /* 800 Literature & rhetoric */
-        { code: "800", name: "Literature & rhetoric (문학 및 수사학)", main: "800 Literature" },
-        { code: "810", name: "American literature in English (미국문학)", main: "800 Literature" },
-        { code: "820", name: "English & Old English literatures (영국문학)", main: "800 Literature" },
-        { code: "830", name: "German & related literatures (독일문학)", main: "800 Literature" },
-        { code: "840", name: "French & related literatures (프랑스문학)", main: "800 Literature" },
-        { code: "850", name: "Italian, Romanian literatures (이탈리아문학)", main: "800 Literature" },
-        { code: "860", name: "Spanish & Portuguese literatures (스페인문학)", main: "800 Literature" },
-        { code: "870", name: "Latin & Italic literatures (라틴문학)", main: "800 Literature" },
-        { code: "880", name: "Classical Greek & related literatures (그리스문학)", main: "800 Literature" },
-        { code: "890", name: "Other literatures (기타 문학: 한국문학, 동양문학 등)", main: "800 Literature" },
+        { code: "800", name: "Literature & rhetoric (문학, 수사학)", main: "800 Literature", answers: ["문학", "수사학", "Literature"] },
+        { code: "810", name: "American literature in English (미국문학)", main: "800 Literature", answers: ["미국문학", "American literature"] },
+        { code: "820", name: "English & Old English literatures (영국문학)", main: "800 Literature", answers: ["영국문학", "영문학", "English literature"] },
+        { code: "830", name: "German & related literatures (독일문학)", main: "800 Literature", answers: ["독일문학", "독문학", "German literature"] },
+        { code: "840", name: "French & related literatures (프랑스문학)", main: "800 Literature", answers: ["프랑스문학", "불문학", "French literature"] },
+        { code: "850", name: "Italian, Romanian literatures (이탈리아문학)", main: "800 Literature", answers: ["이탈리아문학", "Italian literature"] },
+        { code: "860", name: "Spanish & Portuguese literatures (스페인문학)", main: "800 Literature", answers: ["스페인문학", "포르투갈문학", "Spanish literature"] },
+        { code: "870", name: "Latin & Italic literatures (고대 이탈리아, 라틴문학)", main: "800 Literature", answers: ["라틴문학", "고대 이탈리아문학", "Latin literature"] },
+        { code: "880", name: "Classical Greek & related literatures (고대 그리스문학)", main: "800 Literature", answers: ["그리스문학", "고대 그리스문학", "Greek literature"] },
+        { code: "890", name: "Other literatures (기타 문학)", main: "800 Literature", answers: ["기타 문학", "기타문학", "Other literatures"] },
 
         /* 900 History, geography & auxiliary disciplines */
-        { code: "900", name: "History & geography (역사 및 지리)", main: "900 History" },
-        { code: "910", name: "Geography & travel (지리학 및 여행)", main: "900 History" },
-        { code: "920", name: "Biography, genealogy, insignia (전기, 족보)", main: "900 History" },
-        { code: "930", name: "History of ancient world (고대사: ~ca.499)", main: "900 History" },
-        { code: "940", name: "History of Europe (유럽사)", main: "900 History" },
-        { code: "950", name: "History of Asia (아시아사)", main: "900 History" },
-        { code: "960", name: "History of Africa (아프리카사)", main: "900 History" },
-        { code: "970", name: "History of North America (북아메리카사)", main: "900 History" },
-        { code: "980", name: "History of South America (남아메리카사)", main: "900 History" },
-        { code: "990", name: "History of other areas (오세아니아, 기타지역사)", main: "900 History" }
+        { code: "900", name: "History & geography (역사, 지리)", main: "900 History", answers: ["역사", "지리", "History"] },
+        { code: "910", name: "Geography & travel (지리, 지리학, 여행)", main: "900 History", answers: ["지리", "지리학", "여행", "Geography", "Travel"] },
+        { code: "920", name: "Biography, genealogy (전기, 계보학, 기장)", main: "900 History", answers: ["전기", "계보학", "기장", "족보", "Biography"] },
+        { code: "930", name: "History of ancient world(to ca. 499) (고대세계사)", main: "900 History", answers: ["고대세계사", "고대사", "Ancient history"] },
+        { code: "940", name: "History of Europe (유럽사)", main: "900 History", answers: ["유럽사", "유럽역사", "Europe history"] },
+        { code: "950", name: "History of Asia (아시아사)", main: "900 History", answers: ["아시아사", "아시아역사", "Asia history"] },
+        { code: "960", name: "History of Africa (아프리카사)", main: "900 History", answers: ["아프리카사", "아프리카역사", "Africa history"] },
+        { code: "970", name: "History of North America (북아메리카사)", main: "900 History", answers: ["북아메리카사", "북미사", "North America"] },
+        { code: "980", name: "History of South America (남아메리카사)", main: "900 History", answers: ["남아메리카사", "남미사", "South America"] },
+        { code: "990", name: "History of other areas (기타지역사)", main: "900 History", answers: ["기타지역사", "기타지역", "오세아니아사"] }
       ],
 
       TABLE: [
         /* KDC 보조표 */
-        { code: "K-표1", name: "KDC 표1: 표준구분표 (Standard Subdivisions)", main: "KDC 보조표" },
-        { code: "K-표2", name: "KDC 표2: 지역구분표 (Geographic Areas)", main: "KDC 보조표" },
-        { code: "K-표3", name: "KDC 표3: 한국지역구분표 (Korean Areas)", main: "KDC 보조표" },
-        { code: "K-표4", name: "KDC 표4: 한국시대구분표 (Korean Historical Periods)", main: "KDC 보조표" },
-        { code: "K-표5", name: "KDC 표5: 언어구분표 (Languages)", main: "KDC 보조표" },
-        { code: "K-표6", name: "KDC 표6: 언어공통구분표 (Subdivisions of Individual Languages)", main: "KDC 보조표" },
-        { code: "K-표7", name: "KDC 표7: 문학형식구분표 (Subdivisions of Individual Literatures)", main: "KDC 보조표" },
-        { code: "K-표8", name: "KDC 표8: 종교구분표 (Subdivisions of Individual Religions)", main: "KDC 보조표" },
+        { code: "K-표1", name: "KDC 표1: 표준구분표 (Standard Subdivisions)", main: "KDC 보조표", answers: ["표준구분표", "표준구분"] },
+        { code: "K-표2", name: "KDC 표2: 지역구분표 (Geographic Areas)", main: "KDC 보조표", answers: ["지역구분표", "지역구분"] },
+        { code: "K-표3", name: "KDC 표3: 한국지역구분표 (Korean Areas)", main: "KDC 보조표", answers: ["한국지역구분표", "한국지역"] },
+        { code: "K-표4", name: "KDC 표4: 한국시대구분표 (Korean Historical Periods)", main: "KDC 보조표", answers: ["한국시대구분표", "한국시대", "시대구분표"] },
+        { code: "K-표5", name: "KDC 표5: 언어구분표 (Languages)", main: "KDC 보조표", answers: ["언어구분표", "언어구분"] },
+        { code: "K-표6", name: "KDC 표6: 언어공통구분표 (Subdivisions of Individual Languages)", main: "KDC 보조표", answers: ["언어공통구분표", "언어공통"] },
+        { code: "K-표7", name: "KDC 표7: 문학형식구분표 (Subdivisions of Individual Literatures)", main: "KDC 보조표", answers: ["문학형식구분표", "문학형식구분", "문학형식"] },
+        { code: "K-표8", name: "KDC 표8: 종교구분표 (Subdivisions of Individual Religions)", main: "KDC 보조표", answers: ["종교구분표", "종교구분"] },
 
         /* DDC 23 보조표 (Tables) */
-        { code: "D-T1", name: "DDC Table 1: Standard Subdivisions (표준구분표)", main: "DDC 보조표" },
-        { code: "D-T2", name: "DDC Table 2: Geographic Areas, Historical Periods, Biography (지역, 시대, 전기)", main: "DDC 보조표" },
-        { code: "D-T3", name: "DDC Table 3: Subdivisions for Arts, Individual Literatures (예술 및 개별문학)", main: "DDC 보조표" },
-        { code: "D-T4", name: "DDC Table 4: Subdivisions of Individual Languages and Language Families (개별언어)", main: "DDC 보조표" },
-        { code: "D-T5", name: "DDC Table 5: Ethnic and National Groups (민족 및 국적구분표)", main: "DDC 보조표" },
-        { code: "D-T6", name: "DDC Table 6: Languages (언어표)", main: "DDC 보조표" },
+        { code: "D-T1", name: "DDC Table 1: Standard Subdivisions (표준구분표)", main: "DDC 보조표", answers: ["표준구분표", "Standard Subdivisions", "T1"] },
+        { code: "D-T2", name: "DDC Table 2: Geographic Areas, Historical Periods, Biography (지역, 시대, 전기)", main: "DDC 보조표", answers: ["지역구분표", "지역, 시대, 전기", "Geographic Areas", "T2"] },
+        { code: "D-T3", name: "DDC Table 3: Subdivisions for Arts, Individual Literatures (예술 및 개별문학)", main: "DDC 보조표", answers: ["예술 및 개별문학", "문학형식구분표", "Individual Literatures", "T3"] },
+        { code: "D-T4", name: "DDC Table 4: Subdivisions of Individual Languages and Language Families (개별언어)", main: "DDC 보조표", answers: ["개별언어", "개별언어구분표", "Individual Languages", "T4"] },
+        { code: "D-T5", name: "DDC Table 5: Ethnic and National Groups (민족 및 국적구분표)", main: "DDC 보조표", answers: ["민족 및 국적구분표", "민족구분표", "Ethnic and National Groups", "T5"] },
+        { code: "D-T6", name: "DDC Table 6: Languages (언어표)", main: "DDC 보조표", answers: ["언어표", "언어구분표", "Languages", "T6"] },
 
-        /* 표준구분 세부 항목 (KDC & DDC 공통 형식) */
-        { code: "-01", name: "철학 및 이론 (Philosophy & theory)", main: "표준구분 (Table 1)" },
-        { code: "-02", name: "잡저, 핸드북, 지도법 (Miscellany)", main: "표준구분 (Table 1)" },
-        { code: "-03", name: "사전, 백과사전, 용어집 (Dictionaries & encyclopedias)", main: "표준구분 (Table 1)" },
-        { code: "-04", name: "특별주제 (Special topics)", main: "표준구분 (Table 1)" },
-        { code: "-05", name: "연속간행물, 잡지 (Serial publications)", main: "표준구분 (Table 1)" },
-        { code: "-06", name: "단체, 학회, 기관, 경영 (Organizations & management)", main: "표준구분 (Table 1)" },
-        { code: "-07", name: "교육, 연구, 지도 (Education, research, related topics)", main: "표준구분 (Table 1)" },
-        { code: "-08", name: "역사인물집단, 전집 (History & description of groups)", main: "표준구분 (Table 1)" },
-        { code: "-09", name: "역사적, 지리적 논의 (Historical, geographic, persons treatment)", main: "표준구분 (Table 1)" }
+        /* 표준구분 세부 항목 */
+        { code: "-01", name: "철학 및 이론 (Philosophy & theory)", main: "표준구분 (Table 1)", answers: ["철학 및 이론", "철학", "이론"] },
+        { code: "-02", name: "잡저, 핸드북, 지도법 (Miscellany)", main: "표준구분 (Table 1)", answers: ["잡저", "핸드북", "지도법", "편람"] },
+        { code: "-03", name: "사전, 백과사전, 용어집 (Dictionaries & encyclopedias)", main: "표준구분 (Table 1)", answers: ["사전", "백과사전", "용어집"] },
+        { code: "-04", name: "특별주제 (Special topics)", main: "표준구분 (Table 1)", answers: ["특별주제"] },
+        { code: "-05", name: "연속간행물, 잡지 (Serial publications)", main: "표준구분 (Table 1)", answers: ["연속간행물", "잡지"] },
+        { code: "-06", name: "단체, 학회, 기관, 경영 (Organizations & management)", main: "표준구분 (Table 1)", answers: ["단체", "학회", "기관", "경영"] },
+        { code: "-07", name: "교육, 연구, 지도 (Education, research, related topics)", main: "표준구분 (Table 1)", answers: ["교육", "연구", "지도"] },
+        { code: "-08", name: "역사인물집단, 전집 (History & description of groups)", main: "표준구분 (Table 1)", answers: ["역사인물집단", "전집", "인물집단"] },
+        { code: "-09", name: "역사적, 지리적 논의 (Historical, geographic, persons treatment)", main: "표준구분 (Table 1)", answers: ["역사적, 지리적 논의", "역사", "지리", "지역구분"] }
       ]
     };
 
@@ -430,12 +444,16 @@
     let enteredCode = "";
     let stats = { correct: 0, total: 0, streak: 0 };
 
+    // 공백, 특수문자 제거 및 소문자 정규화 함수
+    function normalizeStr(str) {
+      return (str || "").toString().replace(/[\s\(\)\[\],./\-~_&]/g, "").toLowerCase();
+    }
+
     function switchSchema(schema) {
       currentSchema = schema;
       document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
         btn.classList.toggle('active', ['KDC', 'DDC', 'TABLE'][idx] === schema);
       });
-      // 테이블 모드에서는 자동 4지선다로 전환 (문자 포함 코드 대응)
       if (schema === 'TABLE' && currentQuizType === 'KEYPAD') {
         switchQuizType('4CHOICE');
       }
@@ -446,10 +464,14 @@
       currentQuizType = type;
       document.getElementById('mode4').classList.toggle('active', type === '4CHOICE');
       document.getElementById('modeKeypad').classList.toggle('active', type === 'KEYPAD');
+      document.getElementById('modeText').classList.toggle('active', type === 'TEXT');
+      
       document.getElementById('choicesArea').style.display = type === '4CHOICE' ? 'grid' : 'none';
       document.getElementById('keypadArea').style.display = type === 'KEYPAD' ? 'flex' : 'none';
+      document.getElementById('textInputArea').style.display = type === 'TEXT' ? 'flex' : 'none';
+      
       clearNum();
-      renderOptions();
+      nextQuestion();
     }
 
     function nextQuestion() {
@@ -460,10 +482,21 @@
       currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
       document.getElementById('categoryBadge').textContent = currentQuestion.main;
-      document.getElementById('questionText').textContent = currentQuestion.name;
-      document.getElementById('questionType').textContent = `[${currentSchema}] 아래 항목의 분류 코드는?`;
 
-      renderOptions();
+      if (currentQuizType === 'TEXT') {
+        // 타이핑 모드: 분류 코드를 주고 명칭을 묻기
+        document.getElementById('questionType').textContent = `[${currentSchema}] 아래 분류 번호의 강목/명칭은?`;
+        document.getElementById('questionText').textContent = currentQuestion.code;
+        const input = document.getElementById('textAnswerInput');
+        input.value = "";
+        input.disabled = false;
+        setTimeout(() => input.focus(), 50);
+      } else {
+        // 객관식 및 숫자패드 모드: 명칭을 주고 번호를 묻기
+        document.getElementById('questionType').textContent = `[${currentSchema}] 아래 항목의 분류 코드는?`;
+        document.getElementById('questionText').textContent = currentQuestion.name;
+        renderOptions();
+      }
     }
 
     function renderOptions() {
@@ -471,7 +504,6 @@
         const pool = DATA[currentSchema];
         const wrongPool = pool.filter(item => item.code !== currentQuestion.code);
         
-        // 같은 주류 안에서 오답을 우선 추출하여 난이도와 암기 효과 극대화
         const sameMainWrongs = wrongPool.filter(item => item.main === currentQuestion.main);
         let selectedWrongs = [];
         if (sameMainWrongs.length >= 3) {
@@ -504,6 +536,7 @@
       });
     }
 
+    /* 숫자패드 로직 */
     function pressNum(digit) {
       if (enteredCode.length < 3) {
         enteredCode += digit;
@@ -523,6 +556,43 @@
       handleAnswer(isCorrect, enteredCode);
     }
 
+    /* 텍스트 타이핑 채점 로직 */
+    function submitTextAnswer() {
+      const input = document.getElementById('textAnswerInput');
+      const userText = input.value.trim();
+      if (!userText) return;
+
+      const normUser = normalizeStr(userText);
+
+      // 허용 가능한 정답 목록 만들기
+      const validAnswers = [];
+      if (currentQuestion.answers && Array.isArray(currentQuestion.answers)) {
+        validAnswers.push(...currentQuestion.answers);
+      }
+      validAnswers.push(currentQuestion.name);
+      
+      // name에서 괄호 안 텍스트나 콤마 구분자 자동 추출하여 정답 후보군에 포함
+      const matchParen = currentQuestion.name.match(/\((.*?)\)/);
+      if (matchParen) validAnswers.push(matchParen[1]);
+      currentQuestion.name.split(/[,/]/).forEach(s => validAnswers.push(s));
+
+      // 정답 여부 대조
+      const isCorrect = validAnswers.some(ans => {
+        const normAns = normalizeStr(ans);
+        return normAns.length > 0 && (normUser === normAns || (normAns.length >= 2 && normUser.includes(normAns)) || (normUser.length >= 2 && normAns.includes(normUser)));
+      });
+
+      input.disabled = true;
+      handleAnswer(isCorrect, userText);
+    }
+
+    // Enter키로 정답 제출
+    document.getElementById('textAnswerInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        submitTextAnswer();
+      }
+    });
+
     function handleAnswer(isCorrect, givenAnswer) {
       stats.total++;
       if (isCorrect) {
@@ -535,7 +605,7 @@
       }
       updateStats();
 
-      // Feedback Box 표시
+      // Feedback Box
       const box = document.getElementById('feedbackBox');
       const title = document.getElementById('feedbackTitle');
       const desc = document.getElementById('feedbackDesc');
