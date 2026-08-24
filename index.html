@@ -158,7 +158,7 @@
 
   <script>
     /* =================================================================
-       1. 데이터셋 (사용자 정의 데이터 완전 보존)
+       1. 데이터셋 (사용자 정의 데이터 완전 보존 + 사진 속 보조표 완벽 수록)
        ================================================================= */
     const DATA = {
       KDC: [
@@ -406,37 +406,160 @@
       ],
 
       TABLE: [
+        /* ================= KDC 보조표 (사진 1 전체) ================= */
         /* KDC 표준구분표 */
-        { code: "-01", name: "철학 및 이론", main: " KDC 표준구분표", answers: ["철학, 이론", "철학", "이론"] },
-        { code: "-02", name: "잡저", main: "KDC 표준구분표", answers: ["잡저", "핸드북", "지도법", "편람"] },
-        { code: "-03", name: "사전, 인용어사전, 약어집", main: "KDC 표준구분표", answers: ["사전"] },
-        { code: "-04", name: "강연집, 수필집, 연설문집", main: "KDC 표준구분표", answers: ["강연집, 수필집, 연설문집"] },
-        { code: "-05", name: "연속간행물", main: "KDC 표준구분표", answers: ["연속간행물"] },
-        { code: "-06", name: "각종 단체, 조직(학회, 단체, 협회, 기관, 회의) 및 경영" , main: "KDC 표준구분표", answers: ["단체", "학회", "기관", "경영"] },
-        { code: "-07", name: "지도법, 연구법 및 교육, 교육자료", main: "KDC 표준구분표", answers: ["교육", "연구", "지도", "지도법"] },
-        { code: "-08", name: "총서, 전집, 선집", main: "KDC 표준구분표", answers: ["총서", "전집", "총서, 전집", "총서, 전집, 선집"] },
-        { code: "-09", name: "역사 및 지역구분", main: "KDC 표준구분표", answers: ["역사", "역사, 지역구분", "역사 및 지역구분"] },
+        { code: "-01", name: "철학 및 이론", main: "KDC 표준구분표", answers: ["철학 및 이론", "철학, 이론", "철학", "이론"] },
+        { code: "-02", name: "잡저(雜著)", main: "KDC 표준구분표", answers: ["잡저(雜著)", "잡저", "핸드북", "지도법", "편람"] },
+        { code: "-03", name: "사전(辭典), 사전(事典), 인용어사전, 약어집", main: "KDC 표준구분표", answers: ["사전(辭典), 사전(事典), 인용어사전, 약어집", "사전", "인용어사전", "약어집", "사전, 인용어사전, 약어집", "사전, 인용어사전", "사전, 약어집"] },
+        { code: "-04", name: "강연집, 수필집, 연설문집", main: "KDC 표준구분표", answers: ["강연집, 수필집, 연설문집", "강연집", "수필집", "연설문집", "강연집, 수필집", "수필집, 연설문집", "강연집, 연설문집"] },
+        { code: "-05", name: "연속간행물", main: "KDC 표준구분표", answers: ["연속간행물", "잡지"] },
+        { code: "-06", name: "각종 단체, 조직(학회, 단체, 협회, 기관, 회의) 및 경영", main: "KDC 표준구분표", answers: ["각종 단체, 조직(학회, 단체, 협회, 기관, 회의) 및 경영", "각종 단체, 조직 및 경영", "단체", "학회", "협회", "기관", "회의", "조직", "경영", "각종 단체", "단체, 학회", "학회, 단체", "조직 및 경영"] },
+        { code: "-07", name: "지도법, 연구법 및 교육, 교육자료", main: "KDC 표준구분표", answers: ["지도법, 연구법 및 교육, 교육자료", "지도법", "연구법", "교육", "교육자료", "지도법, 연구법", "지도법, 교육", "연구법, 교육", "지도법, 연구법, 교육"] },
+        { code: "-08", name: "총서, 전집, 선집", main: "KDC 표준구분표", answers: ["총서, 전집, 선집", "총서", "전집", "선집", "총서, 전집", "총서, 선집", "전집, 선집"] },
+        { code: "-09", name: "역사 및 지역구분", main: "KDC 표준구분표", answers: ["역사 및 지역구분", "역사", "지역구분", "역사, 지역구분", "역사 및 지역"] },
 
         /* KDC 지역구분표 */
-        { code: "-1", name: "아시아", main: " KDC 지역구분표", answers: ["아시아"] },
+        { code: "-1", name: "아시아", main: "KDC 지역구분표", answers: ["아시아"] },
         { code: "-2", name: "유럽", main: "KDC 지역구분표", answers: ["유럽"] },
         { code: "-3", name: "아프리카", main: "KDC 지역구분표", answers: ["아프리카"] },
-        { code: "-4", name: "북아메리카", main: "KDC 지역구분표", answers: ["북아메리카"] },
-        { code: "-5", name: "남아메리카(남미)", main: "KDC 지역구분표", answers: ["남아메리카"] },
-        { code: "-6", name: "오세아니아, 양극지방" , main: "KDC 지역구분표", answers: ["오세아니아, 양극지방"] },
-        { code: "-7", name: "지역구분 일반", main: "KDC 지역구분표", answers: ["지역구분 일반"] },
-        { code: "-8", name: "해양", main: "KDC 지역구분표", answers: ["해양"] },
+        { code: "-4", name: "북아메리카", main: "KDC 지역구분표", answers: ["북아메리카", "북미"] },
+        { code: "-5", name: "남아메리카(남미)", main: "KDC 지역구분표", answers: ["남아메리카(남미)", "남아메리카", "남미"] },
+        { code: "-6", name: "오세아니아, 양극지방", main: "KDC 지역구분표", answers: ["오세아니아, 양극지방", "오세아니아", "양극지방", "대양주"] },
+        { code: "-7", name: "지역구분 일반", main: "KDC 지역구분표", answers: ["지역구분 일반", "지역구분일반", "지역구분", "지역 일반"] },
+        { code: "-8", name: "해양", main: "KDC 지역구분표", answers: ["해양", "바다"] },
 
         /* KDC 국어구분표 */
-        { code: "-1", name: "한국어", main: " KDC 국어구분표", answers: ["한국어"] },
-        { code: "-2", name: "중국어", main: "KDC 국어구분표", answers: ["중국어"] },
-        { code: "-3", name: "일본어", main: "KDC 국어구분표", answers: ["일본어"] },
+        { code: "-1", name: "한국어", main: "KDC 국어구분표", answers: ["한국어", "국어"] },
+        { code: "-2", name: "중국어", main: "KDC 국어구분표", answers: ["중국어", "한어"] },
+        { code: "-3", name: "일본어", main: "KDC 국어구분표", answers: ["일본어", "일어"] },
+        { code: "-39", name: "기타 아시아 제어", main: "KDC 국어구분표", answers: ["기타 아시아 제어", "기타 아시아제어", "아시아 제어"] },
         { code: "-4", name: "영어", main: "KDC 국어구분표", answers: ["영어"] },
-        { code: "-5", name: "독일어", main: "KDC 국어구분표", answers: ["독일어"] },
-        { code: "-6", name: "프랑스어" , main: "KDC 국어구분표", answers: ["프랑스어"] },
-        { code: "-7", name: "스페인어", main: "KDC 국어구분표", answers: ["스페인어"] },
-        { code: "-8", name: "이탈리아어", main: "KDC 국어구분표", answers: ["이탈리아어"] },
-        { code: "-9", name: "기타제어", main: "KDC 국어구분표", answers: ["기타제어"] }
+        { code: "-5", name: "독일어", main: "KDC 국어구분표", answers: ["독일어", "독어"] },
+        { code: "-59", name: "기타 게르만어", main: "KDC 국어구분표", answers: ["기타 게르만어", "기타 게르만어파", "게르만어"] },
+        { code: "-6", name: "프랑스어", main: "KDC 국어구분표", answers: ["프랑스어", "불어"] },
+        { code: "-7", name: "스페인어", main: "KDC 국어구분표", answers: ["스페인어", "서반아어"] },
+        { code: "-79", name: "포르투갈어", main: "KDC 국어구분표", answers: ["포르투갈어"] },
+        { code: "-8", name: "이탈리아어", main: "KDC 국어구분표", answers: ["이탈리아어", "이태리어"] },
+        { code: "-9", name: "기타제어", main: "KDC 국어구분표", answers: ["기타제어", "기타 제어"] },
+        { code: "-928", name: "러시아어", main: "KDC 국어구분표", answers: ["러시아어", "노어"] },
+
+        /* KDC 문학형식구분표 */
+        { code: "-1", name: "시", main: "KDC 문학형식구분표", answers: ["시"] },
+        { code: "-2", name: "희곡", main: "KDC 문학형식구분표", answers: ["희곡", "연극"] },
+        { code: "-3", name: "소설", main: "KDC 문학형식구분표", answers: ["소설"] },
+        { code: "-4", name: "수필, 소품", main: "KDC 문학형식구분표", answers: ["수필, 소품", "수필", "소품"] },
+        { code: "-5", name: "연설, 웅변", main: "KDC 문학형식구분표", answers: ["연설, 웅변", "연설", "웅변"] },
+        { code: "-6", name: "일기, 서간, 기행", main: "KDC 문학형식구분표", answers: ["일기, 서간, 기행", "일기", "서간", "기행", "일기, 서간", "서간, 기행", "일기, 기행"] },
+        { code: "-7", name: "풍자 및 유머", main: "KDC 문학형식구분표", answers: ["풍자 및 유머", "풍자, 유머", "풍자", "유머", "해학"] },
+        { code: "-8", name: "르포르타주 및 기타", main: "KDC 문학형식구분표", answers: ["르포르타주 및 기타", "르포르타주", "기타", "르포르타주, 기타", "르포"] },
+
+        /* KDC 언어공통구분표 */
+        { code: "-1", name: "음운 및 문자", main: "KDC 언어공통구분표", answers: ["음운 및 문자", "음운, 문자", "음운", "문자"] },
+        { code: "-2", name: "어원", main: "KDC 언어공통구분표", answers: ["어원"] },
+        { code: "-3", name: "사전", main: "KDC 언어공통구분표", answers: ["사전"] },
+        { code: "-4", name: "어휘", main: "KDC 언어공통구분표", answers: ["어휘"] },
+        { code: "-5", name: "문법", main: "KDC 언어공통구분표", answers: ["문법"] },
+        { code: "-6", name: "작문", main: "KDC 언어공통구분표", answers: ["작문"] },
+        { code: "-7", name: "독본, 해석, 회화", main: "KDC 언어공통구분표", answers: ["독본, 해석, 회화", "독본", "해석", "회화", "독본, 해석", "독본, 회화", "해석, 회화"] },
+        { code: "-8", name: "방언(사투리)", main: "KDC 언어공통구분표", answers: ["방언(사투리)", "방언", "사투리", "방언, 사투리"] },
+
+        /* KDC 종교공통구분표 */
+        { code: "-1", name: "교리, 교의", main: "KDC 종교공통구분표", answers: ["교리, 교의", "교리", "교의"] },
+        { code: "-2", name: "종교창시자(교주) 및 제자", main: "KDC 종교공통구분표", answers: ["종교창시자(교주) 및 제자", "종교창시자", "교주", "제자", "종교창시자 및 제자", "교주 및 제자", "종교창시자, 제자"] },
+        { code: "-3", name: "경전, 성전", main: "KDC 종교공통구분표", answers: ["경전, 성전", "경전", "성전"] },
+        { code: "-4", name: "종교신앙, 신앙록, 신앙생활, 수도생활", main: "KDC 종교공통구분표", answers: ["종교신앙, 신앙록, 신앙생활, 수도생활", "종교신앙", "신앙록", "신앙생활", "수도생활", "신앙", "종교신앙, 신앙생활", "신앙생활, 수도생활"] },
+        { code: "-5", name: "선교, 포교, 전도, 교화(교육)활동", main: "KDC 종교공통구분표", answers: ["선교, 포교, 전도, 교화(교육)활동", "선교", "포교", "전도", "교화활동", "교육활동", "선교, 포교", "선교, 포교, 전도", "교화(교육)활동"] },
+        { code: "-6", name: "종단, 교단", main: "KDC 종교공통구분표", answers: ["종단, 교단", "종단", "교단"] },
+        { code: "-7", name: "예배형식, 의식, 의례", main: "KDC 종교공통구분표", answers: ["예배형식, 의식, 의례", "예배형식", "의식", "의례", "예배", "의식, 의례", "예배형식, 의식"] },
+        { code: "-8", name: "종파, 교파", main: "KDC 종교공통구분표", answers: ["종파, 교파", "종파", "교파"] },
+
+        /* ================= DDC 보조표 (사진 2, 3, 4 전체) ================= */
+        /* Table 1 Standard Subdivisions (사진 2) */
+        { code: "-01", name: "Philosophy and theory (철학 및 이론)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["철학 및 이론", "철학, 이론", "철학", "이론"] },
+        { code: "-02", name: "Miscellany (편람이나 도표 등)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["편람이나 도표 등", "편람이나 도표", "편람", "도표", "편람, 도표"] },
+        { code: "-03", name: "Dictionary, encyclopedias, concordances (사전, 백과사전, 용어집 등)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["사전, 백과사전, 용어집 등", "사전, 백과사전, 용어집", "사전", "백과사전", "용어집", "사전, 백과사전", "사전, 용어집", "백과사전, 용어집"] },
+        { code: "-04", name: "Special Topic (특수주제)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["특수주제", "특수 주제"] },
+        { code: "-05", name: "Serial topics (연속간행물)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["연속간행물"] },
+        { code: "-06", name: "Organizations and management (단체 및 경영관리)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["단체 및 경영관리", "단체, 경영관리", "단체", "경영관리", "경영"] },
+        { code: "-07", name: "Education, research, related topics (교육 및 연구, 관련 주제)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["교육 및 연구, 관련 주제", "교육 및 연구", "교육, 연구", "교육", "연구", "관련 주제", "관련주제"] },
+        { code: "-08", name: "Groups of people (사람 집단)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["사람 집단", "사람집단", "사람"] },
+        { code: "-09", name: "History, geographic treatment, biography (역사, 지리, 인물)", main: "DDC Table 1 (Standard Subdivisions)", answers: ["역사, 지리, 인물", "역사", "지리", "인물", "역사, 지리", "지리, 인물", "역사, 인물"] },
+
+        /* Table 2 Geographic Areas, Historical Periods, Biography (사진 2) */
+        { code: "-001-009", name: "Standard subdivisions (표준구분)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["표준구분", "표준세구분", "표준 구분"] },
+        { code: "-01-05", name: "Historical Period (역사시대구분)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["역사시대구분", "역사 시대 구분", "시대구분", "역사시대"] },
+        { code: "-1", name: "Areas, regions, places in general; oceans and seas (지역구분 일반(일반지역))", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["지역구분 일반(일반지역)", "지역구분 일반", "일반지역", "지역구분일반", "지역 일반"] },
+        { code: "-2", name: "Biography (인물)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["인물", "전기"] },
+        { code: "-3", name: "Ancient world (고대세계)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["고대세계", "고대 세계"] },
+        { code: "-4", name: "Europe (유럽)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["유럽"] },
+        { code: "-5", name: "Asia (아시아)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["아시아"] },
+        { code: "-6", name: "Africa (아프리카)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["아프리카"] },
+        { code: "-7", name: "North America (북아메리카)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["북아메리카", "북미"] },
+        { code: "-8", name: "South America (남아메리카)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["남아메리카", "남미"] },
+        { code: "-9", name: "Australasia, Pacific Ocean islands, etc. (기타 지역)", main: "DDC Table 2 (Geographic Areas, etc.)", answers: ["기타 지역", "기타지역"] },
+
+        /* Table 3A Subdivisions for individual authors (사진 2) */
+        { code: "-1", name: "Poetry (시)", main: "DDC Table 3A (Individual Authors)", answers: ["시"] },
+        { code: "-2", name: "Drama (희곡)", main: "DDC Table 3A (Individual Authors)", answers: ["희곡"] },
+        { code: "-3", name: "Fiction (소설)", main: "DDC Table 3A (Individual Authors)", answers: ["소설"] },
+        { code: "-4", name: "Essays (수필)", main: "DDC Table 3A (Individual Authors)", answers: ["수필"] },
+        { code: "-5", name: "Speeches (연설)", main: "DDC Table 3A (Individual Authors)", answers: ["연설"] },
+        { code: "-6", name: "Letters (서간문)", main: "DDC Table 3A (Individual Authors)", answers: ["서간문", "서간", "편지"] },
+        { code: "-8", name: "Miscellaneous writings (잡문)", main: "DDC Table 3A (Individual Authors)", answers: ["잡문"] },
+
+        /* Table 3B Subdivisions for more than one authors (사진 3) */
+        { code: "-01-07", name: "Standard subdivisions (표준세구분)", main: "DDC Table 3B (More than One Author)", answers: ["표준세구분", "표준구분"] },
+        { code: "-08", name: "Collections of literary texts in more than form (문학전집)", main: "DDC Table 3B (More than One Author)", answers: ["문학전집", "전집"] },
+        { code: "-09", name: "History, description, critical, appraisal of works in more than one form (문학사, 해설, 평론)", main: "DDC Table 3B (More than One Author)", answers: ["문학사, 해설, 평론", "문학사", "해설", "평론", "문학사, 해설", "해설, 평론", "문학사, 평론"] },
+        { code: "-1", name: "Poetry (시)", main: "DDC Table 3B (More than One Author)", answers: ["시"] },
+        { code: "-2", name: "Drama (희곡)", main: "DDC Table 3B (More than One Author)", answers: ["희곡"] },
+        { code: "-3", name: "Fiction (소설)", main: "DDC Table 3B (More than One Author)", answers: ["소설"] },
+        { code: "-4", name: "Essays (수필)", main: "DDC Table 3B (More than One Author)", answers: ["수필"] },
+        { code: "-5", name: "Speeches (연설)", main: "DDC Table 3B (More than One Author)", answers: ["연설"] },
+        { code: "-6", name: "Letters (서간문)", main: "DDC Table 3B (More than One Author)", answers: ["서간문", "서간", "편지"] },
+        { code: "-7", name: "Satire and humor (풍자 및 유머)", main: "DDC Table 3B (More than One Author)", answers: ["풍자 및 유머", "풍자, 유머", "풍자", "유머"] },
+        { code: "-8", name: "Miscellaneous writings (잡문)", main: "DDC Table 3B (More than One Author)", answers: ["잡문"] },
+
+        /* Table 3C Notation to be add (사진 3) */
+        { code: "-001-009", name: "Standard subdivisions (표준세구분)", main: "DDC Table 3C (Notation to be added)", answers: ["표준세구분", "표준구분"] },
+        { code: "-01-09", name: "Specific periods (시대구분)", main: "DDC Table 3C (Notation to be added)", answers: ["시대구분"] },
+        { code: "-1", name: "Art and literature displaying specific qualities of style, mood, viewpoint (문체, 법, 관점 등의 문학특질)", main: "DDC Table 3C (Notation to be added)", answers: ["문체, 법, 관점 등의 문학특질", "문체, 법, 관점 등의 문학 특질", "문체", "법", "관점", "문학특질", "문학 특질", "문체, 법, 관점"] },
+        { code: "-2", name: "Literature displaying specific elements (문학의 특정요소)", main: "DDC Table 3C (Notation to be added)", answers: ["문학의 특정요소", "문학의 특정 요소", "특정요소", "특정 요소"] },
+        { code: "-3", name: "Arts and literature dealing with specific themes and subjects (문학의 주제 및 소재)", main: "DDC Table 3C (Notation to be added)", answers: ["문학의 주제 및 소재", "문학의 주제, 소재", "문학의 주제", "문학의 소재", "주제 및 소재", "주제", "소재"] },
+        { code: "-4", name: "Literature emphasizing subjects (문학의 일반주제)", main: "DDC Table 3C (Notation to be added)", answers: ["문학의 일반주제", "문학의 일반 주제", "일반주제", "일반 주제"] },
+        { code: "-8", name: "Literature for and by ethic and national groups (민족 및 국가군)", main: "DDC Table 3C (Notation to be added)", answers: ["민족 및 국가군", "민족, 국가군", "민족", "국가군"] },
+        { code: "-9", name: "Literature for and by groups of people with specific attributes, residents of specific areas (특정 사람에 의한, 위한 문학)", main: "DDC Table 3C (Notation to be added)", answers: ["특정 사람에 의한, 위한 문학", "특정 사람에 의한 문학", "특정 사람을 위한 문학", "특정 사람"] },
+
+        /* Table 4 Subdivisions of Individual Languages and Language Families (사진 3) */
+        { code: "-01-09", name: "Standard subdivision (표준세구분)", main: "DDC Table 4 (Individual Languages)", answers: ["표준세구분", "표준구분"] },
+        { code: "-1", name: "Writing system, phonology, phonetics of the standard form of the language (쓰기, 음운론, 음성학)", main: "DDC Table 4 (Individual Languages)", answers: ["쓰기, 음운론, 음성학", "쓰기", "음운론", "음성학", "쓰기, 음운론", "음운론, 음성학", "쓰기, 음성학"] },
+        { code: "-2", name: "Etymology of the standard form of the language (어원)", main: "DDC Table 4 (Individual Languages)", answers: ["어원"] },
+        { code: "-3", name: "Dictionaries of the standard form of the language (사전)", main: "DDC Table 4 (Individual Languages)", answers: ["사전"] },
+        { code: "-5", name: "Grammar of the standard form of the language (문법)", main: "DDC Table 4 (Individual Languages)", answers: ["문법"] },
+        { code: "-7", name: "Historical and geographical variations, modern nongeographic variations (언어의 역사적, 지리적 변이: 방언, 속어, 혼합어)", main: "DDC Table 4 (Individual Languages)", answers: ["언어의 역사적, 지리적 변이: 방언, 속어, 혼합어", "언어의 역사적, 지리적 변이", "방언, 속어, 혼합어", "방언", "속어", "혼합어", "방언, 속어", "속어, 혼합어", "방언, 혼합어"] },
+        { code: "-8", name: "Standard usage of the language(Prescriptive linguistics) (언어의 표준용법: 규범언어학(응용언어학))", main: "DDC Table 4 (Individual Languages)", answers: ["언어의 표준용법: 규범언어학(응용언어학)", "언어의 표준용법", "규범언어학(응용언어학)", "규범언어학", "응용언어학", "표준용법"] },
+
+        /* Table 5 Ethnic and National Groups (사진 4) */
+        { code: "-1", name: "North Americans (북아메리카인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["북아메리카인", "북미인"] },
+        { code: "-2", name: "British, English, Anglo-Saxons (앵글로색슨인, 영국인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["앵글로색슨인, 영국인", "앵글로색슨인", "영국인"] },
+        { code: "-3", name: "Germanic people (독일인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["독일인"] },
+        { code: "-4", name: "Modern Latins peoples (현대 라틴인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["현대 라틴인", "현대라틴인", "라틴인"] },
+        { code: "-5", name: "Italians, Romanians, related groups (이탈리아인, 루마니아인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["이탈리아인, 루마니아인", "이탈리아인", "루마니아인"] },
+        { code: "-6", name: "Peoples who speak, or whose ancestors spoke, Spanish, Portuguese, Galician (스페인인 및 포르투갈인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["스페인인 및 포르투갈인", "스페인인, 포르투갈인", "스페인인", "포르투갈인"] },
+        { code: "-7", name: "Other Italic peoples (기타 이탈리아인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["기타 이탈리아인", "기타이탈리아인"] },
+        { code: "-8", name: "Greeks and related groups (그리스인)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["그리스인"] },
+        { code: "-9", name: "Other racial, ethnic, national groups (기타 민족, 종족, 국가군)", main: "DDC Table 5 (Ethnic & National Groups)", answers: ["기타 민족, 종족, 국가군", "기타 민족", "기타 종족", "기타 국가군", "기타민족", "기타종족", "기타국가군", "민족, 종족, 국가군"] },
+
+        /* Table 6 Languages (사진 4) */
+        { code: "-1", name: "Indo-European languages (인도유럽어)", main: "DDC Table 6 (Languages)", answers: ["인도유럽어"] },
+        { code: "-2", name: "English and Old English(Anglo-Saxon) (영어)", main: "DDC Table 6 (Languages)", answers: ["영어"] },
+        { code: "-3", name: "Germanic languages (독일어)", main: "DDC Table 6 (Languages)", answers: ["독일어"] },
+        { code: "-4", name: "Romance languages (로망스어)", main: "DDC Table 6 (Languages)", answers: ["로망스어"] },
+        { code: "-5", name: "Italian, Dalmatian, Romanian, Rhaetian, Sardian, Corsican (이탈리아어)", main: "DDC Table 6 (Languages)", answers: ["이탈리아어"] },
+        { code: "-6", name: "Spanish, Portuguese, Galician (스페인어, 포르투갈어, 갈리시아어)", main: "DDC Table 6 (Languages)", answers: ["스페인어, 포르투갈어, 갈리시아어", "스페인어, 포르투갈어", "스페인어", "포르투갈어", "갈리시아어", "스페인어, 갈리시아어", "포르투갈어, 갈리시아어"] },
+        { code: "-7", name: "Italic languages (라틴어)", main: "DDC Table 6 (Languages)", answers: ["라틴어"] },
+        { code: "-8", name: "Hellenic languages (희랍어)", main: "DDC Table 6 (Languages)", answers: ["희랍어", "그리스어"] },
+        { code: "-9", name: "Other languages (기타언어)", main: "DDC Table 6 (Languages)", answers: ["기타언어", "기타 언어"] }
       ]
     };
 
@@ -484,7 +607,7 @@
       const pool = DATA[currentSchema];
       currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
-      // 주류 배지: 단답형 모드에서도 정상 표시되도록 설정
+      // 주류 배지: 단답형 모드에서도 정상 표시
       const categoryBadge = document.getElementById('categoryBadge');
       categoryBadge.style.display = 'inline-block';
       categoryBadge.textContent = currentQuestion.main;
@@ -542,7 +665,7 @@
 
     /* 숫자패드 로직 (하이픈 지원 & 스마트 숫자 매핑) */
     function pressNum(digit) {
-      if (enteredCode.length < 5) {
+      if (enteredCode.length < 8) {
         enteredCode += digit;
         updateKeypadDisplay();
       }
