@@ -20,9 +20,15 @@
     body { background-color: var(--bg); color: var(--text); padding: 12px; display: flex; justify-content: center; min-height: 100vh; }
     .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; }
     
-    /* Header & Tabs */
-    header { text-align: center; padding: 8px 0; }
-    h1 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    /* Header & View Mode Switcher */
+    header { text-align: center; padding: 4px 0; }
+    h1 { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    
+    .view-switcher { display: flex; gap: 6px; background: #e2e8f0; padding: 4px; border-radius: 12px; margin-bottom: 4px; }
+    .view-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-weight: 700; font-size: 0.9rem; border-radius: 8px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
+    .view-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 4px rgba(37,99,235,0.25); }
+
+    /* Schema Tabs */
     .tab-group { display: flex; gap: 6px; background: #e2e8f0; padding: 4px; border-radius: 12px; }
     .tab-btn { flex: 1; padding: 8px 0; border: none; background: transparent; font-weight: 600; font-size: 0.85rem; border-radius: 8px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
     .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -74,13 +80,31 @@
     .feedback-desc { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 10px; line-height: 1.4; }
     .next-btn { background: var(--primary); color: #fff; border: none; padding: 10px 20px; font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; }
 
+    /* Reference Table View Styles */
+    .reference-table-area { display: none; flex-direction: column; gap: 12px; }
+    .search-box { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.95rem; padding: 10px 14px; outline: none; background: var(--card-bg); transition: border-color 0.2s; }
+    .search-box:focus { border-color: var(--primary); }
+    
+    .table-group-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    .table-group-header { background: #f1f5f9; padding: 8px 12px; font-size: 0.85rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .table-item-list { display: flex; flex-direction: column; }
+    .table-item-row { display: flex; align-items: center; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; gap: 10px; }
+    .table-item-row:last-child { border-bottom: none; }
+    .item-code { min-width: 55px; font-weight: 800; color: var(--primary); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #eff6ff; padding: 2px 6px; border-radius: 6px; text-align: center; font-size: 0.85rem; }
+    .item-name { flex: 1; color: var(--text); font-weight: 600; word-break: keep-all; }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>📚 분류표 암기 트레이너</h1>
+      <h1>📚 분류표 암기 마스터</h1>
+      <!-- View Mode Switcher -->
+      <div class="view-switcher">
+        <button id="viewQuizBtn" class="view-btn active" onclick="switchViewMode('QUIZ')">🎮 퀴즈 풀기</button>
+        <button id="viewTableBtn" class="view-btn" onclick="switchViewMode('TABLE_VIEW')">📖 전체 표 보기</button>
+      </div>
     </header>
 
     <!-- Schema Tabs -->
@@ -90,69 +114,78 @@
       <button class="tab-btn" onclick="switchSchema('TABLE')">보조표 (Tables)</button>
     </div>
 
-    <!-- Mode & Options -->
-    <div class="mode-bar">
-      <span>퀴즈 유형</span>
-      <div class="mode-toggle">
-        <button id="mode4" class="active" onclick="switchQuizType('4CHOICE')">4지선다</button>
-        <button id="modeKeypad" onclick="switchQuizType('KEYPAD')">숫자패드</button>
-        <button id="modeText" onclick="switchQuizType('TEXT')">항목명 입력</button>
+    <!-- ================= 1. 퀴즈 게임 모드 영역 ================= -->
+    <div id="quizAreaWrapper" style="display: flex; flex-direction: column; gap: 12px;">
+      <!-- Mode & Options -->
+      <div class="mode-bar">
+        <span>퀴즈 유형</span>
+        <div class="mode-toggle">
+          <button id="mode4" class="active" onclick="switchQuizType('4CHOICE')">4지선다</button>
+          <button id="modeKeypad" onclick="switchQuizType('KEYPAD')">숫자패드</button>
+          <button id="modeText" onclick="switchQuizType('TEXT')">항목명 입력</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat-item"><div class="label">연속 정답</div><div class="val" id="streakVal">0</div></div>
+        <div class="stat-item"><div class="label">정답률</div><div class="val" id="rateVal">0%</div></div>
+        <div class="stat-item"><div class="label">풀이 수</div><div class="val" id="totalVal">0</div></div>
+      </div>
+
+      <!-- Question Area -->
+      <div class="quiz-card">
+        <div class="category-badge" id="categoryBadge">KDC 400 자연과학</div>
+        <div class="question-type" id="questionType">아래 항목의 분류 코드는?</div>
+        <div class="question-text" id="questionText">물리학</div>
+      </div>
+
+      <!-- 4-Choice UI -->
+      <div class="choices-grid" id="choicesArea">
+        <button class="choice-btn" onclick="checkChoice(0)">410</button>
+        <button class="choice-btn" onclick="checkChoice(1)">420</button>
+        <button class="choice-btn" onclick="checkChoice(2)">430</button>
+        <button class="choice-btn" onclick="checkChoice(3)">440</button>
+      </div>
+
+      <!-- Keypad UI (하이픈 키 포함 및 분리된 확인 버튼) -->
+      <div class="keypad-container" id="keypadArea" style="display: none;">
+        <div class="input-display" id="keypadDisplay">___</div>
+        <div class="keypad-grid">
+          <button class="key-btn" onclick="pressNum('1')">1</button>
+          <button class="key-btn" onclick="pressNum('2')">2</button>
+          <button class="key-btn" onclick="pressNum('3')">3</button>
+          <button class="key-btn" onclick="pressNum('4')">4</button>
+          <button class="key-btn" onclick="pressNum('5')">5</button>
+          <button class="key-btn" onclick="pressNum('6')">6</button>
+          <button class="key-btn" onclick="pressNum('7')">7</button>
+          <button class="key-btn" onclick="pressNum('8')">8</button>
+          <button class="key-btn" onclick="pressNum('9')">9</button>
+          <button class="key-btn action" onclick="pressNum('-')">-</button>
+          <button class="key-btn" onclick="pressNum('0')">0</button>
+          <button class="key-btn action" onclick="clearNum()">C</button>
+        </div>
+        <button class="key-submit-btn" onclick="submitNum()">정답 입력 확인 ↵</button>
+      </div>
+
+      <!-- Text Input UI (직접 타이핑 모드) -->
+      <div class="text-input-container" id="textInputArea" style="display: none;">
+        <input type="text" id="textAnswerInput" class="text-input-box" placeholder="항목명을 입력하세요 (예: 물리학)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button class="text-submit-btn" onclick="submitTextAnswer()">정답 확인 (Enter)</button>
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedback-box" id="feedbackBox">
+        <div class="feedback-title" id="feedbackTitle">정답입니다! 👏</div>
+        <div class="feedback-desc" id="feedbackDesc">KDC 420은 '물리학' (상위: 400 자연과학)</div>
+        <button class="next-btn" onclick="nextQuestion()">다음 문제 풀기 ➡️</button>
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat-item"><div class="label">연속 정답</div><div class="val" id="streakVal">0</div></div>
-      <div class="stat-item"><div class="label">정답률</div><div class="val" id="rateVal">0%</div></div>
-      <div class="stat-item"><div class="label">풀이 수</div><div class="val" id="totalVal">0</div></div>
-    </div>
-
-    <!-- Question Area -->
-    <div class="quiz-card">
-      <div class="category-badge" id="categoryBadge">KDC 400 자연과학</div>
-      <div class="question-type" id="questionType">아래 항목의 분류 코드는?</div>
-      <div class="question-text" id="questionText">물리학</div>
-    </div>
-
-    <!-- 4-Choice UI -->
-    <div class="choices-grid" id="choicesArea">
-      <button class="choice-btn" onclick="checkChoice(0)">410</button>
-      <button class="choice-btn" onclick="checkChoice(1)">420</button>
-      <button class="choice-btn" onclick="checkChoice(2)">430</button>
-      <button class="choice-btn" onclick="checkChoice(3)">440</button>
-    </div>
-
-    <!-- Keypad UI (하이픈 키 포함 및 분리된 확인 버튼) -->
-    <div class="keypad-container" id="keypadArea" style="display: none;">
-      <div class="input-display" id="keypadDisplay">___</div>
-      <div class="keypad-grid">
-        <button class="key-btn" onclick="pressNum('1')">1</button>
-        <button class="key-btn" onclick="pressNum('2')">2</button>
-        <button class="key-btn" onclick="pressNum('3')">3</button>
-        <button class="key-btn" onclick="pressNum('4')">4</button>
-        <button class="key-btn" onclick="pressNum('5')">5</button>
-        <button class="key-btn" onclick="pressNum('6')">6</button>
-        <button class="key-btn" onclick="pressNum('7')">7</button>
-        <button class="key-btn" onclick="pressNum('8')">8</button>
-        <button class="key-btn" onclick="pressNum('9')">9</button>
-        <button class="key-btn action" onclick="pressNum('-')">-</button>
-        <button class="key-btn" onclick="pressNum('0')">0</button>
-        <button class="key-btn action" onclick="clearNum()">C</button>
-      </div>
-      <button class="key-submit-btn" onclick="submitNum()">정답 입력 확인 ↵</button>
-    </div>
-
-    <!-- Text Input UI (직접 타이핑 모드) -->
-    <div class="text-input-container" id="textInputArea" style="display: none;">
-      <input type="text" id="textAnswerInput" class="text-input-box" placeholder="항목명을 입력하세요 (예: 물리학)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      <button class="text-submit-btn" onclick="submitTextAnswer()">정답 확인 (Enter)</button>
-    </div>
-
-    <!-- Feedback -->
-    <div class="feedback-box" id="feedbackBox">
-      <div class="feedback-title" id="feedbackTitle">정답입니다! 👏</div>
-      <div class="feedback-desc" id="feedbackDesc">KDC 420은 '물리학' (상위: 400 자연과학)</div>
-      <button class="next-btn" onclick="nextQuestion()">다음 문제 풀기 ➡️</button>
+    <!-- ================= 2. 전체 분류표 보기 영역 ================= -->
+    <div id="referenceTableArea" class="reference-table-area">
+      <input type="text" id="tableSearchInput" class="search-box" placeholder="🔍 번호 또는 항목명으로 검색..." oninput="renderReferenceTable()">
+      <div id="tableContentArea" style="display: flex; flex-direction: column; gap: 10px;"></div>
     </div>
   </div>
 
@@ -564,8 +597,9 @@
     };
 
     /* =================================================================
-       2. 게임 엔진 로직
+       2. 뷰 모드 및 게임 엔진 로직
        ================================================================= */
+    let currentViewMode = 'QUIZ'; // 'QUIZ' or 'TABLE_VIEW'
     let currentSchema = 'KDC';
     let currentQuizType = '4CHOICE';
     let currentQuestion = null;
@@ -578,12 +612,33 @@
       return (str || "").toString().replace(/[\s\(\)\[\],./\-~_&]/g, "").toLowerCase();
     }
 
+    /* 뷰 모드 전환 (퀴즈 풀기 vs 전체 표 보기) */
+    function switchViewMode(mode) {
+      currentViewMode = mode;
+      document.getElementById('viewQuizBtn').classList.toggle('active', mode === 'QUIZ');
+      document.getElementById('viewTableBtn').classList.toggle('active', mode === 'TABLE_VIEW');
+      
+      document.getElementById('quizAreaWrapper').style.display = mode === 'QUIZ' ? 'flex' : 'none';
+      document.getElementById('referenceTableArea').style.display = mode === 'TABLE_VIEW' ? 'flex' : 'none';
+
+      if (mode === 'TABLE_VIEW') {
+        renderReferenceTable();
+      } else {
+        nextQuestion();
+      }
+    }
+
     function switchSchema(schema) {
       currentSchema = schema;
       document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
         btn.classList.toggle('active', ['KDC', 'DDC', 'TABLE'][idx] === schema);
       });
-      nextQuestion();
+      
+      if (currentViewMode === 'TABLE_VIEW') {
+        renderReferenceTable();
+      } else {
+        nextQuestion();
+      }
     }
 
     function switchQuizType(type) {
@@ -600,6 +655,63 @@
       nextQuestion();
     }
 
+    /* ================= 3. 전체 분류표 렌더링 로직 ================= */
+    function renderReferenceTable() {
+      const searchKeyword = normalizeStr(document.getElementById('tableSearchInput').value || "");
+      const container = document.getElementById('tableContentArea');
+      container.innerHTML = "";
+
+      const rawList = DATA[currentSchema] || [];
+      const filteredList = searchKeyword
+        ? rawList.filter(item => {
+            const matchCode = normalizeStr(item.code).includes(searchKeyword);
+            const matchName = normalizeStr(item.name).includes(searchKeyword);
+            const matchMain = normalizeStr(item.main).includes(searchKeyword);
+            const matchAns = (item.answers || []).some(a => normalizeStr(a).includes(searchKeyword));
+            return matchCode || matchName || matchMain || matchAns;
+          })
+        : rawList;
+
+      if (filteredList.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-sub); font-size:0.9rem;">검색 결과가 없습니다.</div>`;
+        return;
+      }
+
+      // 주류(대분류)별 그룹핑
+      const groups = {};
+      filteredList.forEach(item => {
+        if (!groups[item.main]) groups[item.main] = [];
+        groups[item.main].push(item);
+      });
+
+      Object.keys(groups).forEach(mainTitle => {
+        const card = document.createElement('div');
+        card.className = 'table-group-card';
+
+        let rowsHtml = '';
+        groups[mainTitle].forEach(item => {
+          rowsHtml += `
+            <div class="table-item-row">
+              <span class="item-code">${item.code}</span>
+              <span class="item-name">${item.name}</span>
+            </div>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="table-group-header">
+            <span>${mainTitle}</span>
+            <span style="font-size:0.75rem; font-weight:600; color:var(--text-sub);">${groups[mainTitle].length}개 항목</span>
+          </div>
+          <div class="table-item-list">
+            ${rowsHtml}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    /* ================= 4. 퀴즈 진행 로직 ================= */
     function nextQuestion() {
       document.getElementById('feedbackBox').style.display = 'none';
       clearNum();
@@ -607,7 +719,6 @@
       const pool = DATA[currentSchema];
       currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
-      // 주류 배지: 단답형 모드에서도 정상 표시
       const categoryBadge = document.getElementById('categoryBadge');
       categoryBadge.style.display = 'inline-block';
       categoryBadge.textContent = currentQuestion.main;
@@ -683,7 +794,6 @@
       const nTarget = normalizeStr(targetStr);
       if (!nInput || !nTarget) return false;
       if (nInput === nTarget) return true;
-      // 숫자 변환 비교 (예: -01 문제에 01 또는 1을 입력해도 정답 처리)
       const numInput = parseInt(nInput, 10);
       const numTarget = parseInt(nTarget, 10);
       if (!isNaN(numInput) && !isNaN(numTarget) && numInput === numTarget) {
